@@ -1,0 +1,1071 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rev com — Réunion d'équipe</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --rouge: #E8192C;
+    --jaune: #FFD600;
+    --bleu: #1A6EFF;
+    --violet: #7B2FBE;
+    --noir: #0D0D0F;
+    --gris-fonce: #1A1A1F;
+    --gris-moyen: #2A2A35;
+    --gris-clair: #3A3A48;
+    --texte: #F0F0F5;
+    --texte-doux: #9898B0;
+    --radius: 14px;
+    --radius-sm: 8px;
+    --shadow: 0 8px 32px rgba(0,0,0,0.45);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Syne', sans-serif;
+    background: var(--noir);
+    color: var(--texte);
+    height: 100dvh;
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* ─── FOND ANIMÉ ─── */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background:
+      radial-gradient(ellipse 60% 40% at 10% 20%, rgba(232,25,44,0.12) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 50% at 90% 80%, rgba(123,47,190,0.14) 0%, transparent 60%),
+      radial-gradient(ellipse 40% 40% at 50% 50%, rgba(26,110,255,0.06) 0%, transparent 60%);
+    pointer-events: none; z-index: 0;
+  }
+
+  /* ─── LOGIN ─── */
+  #login-screen {
+    position: fixed; inset: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--noir);
+    animation: fadeIn 0.4s ease;
+  }
+
+  #login-screen::before {
+    content: '';
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 70% 60% at 20% 30%, rgba(232,25,44,0.18) 0%, transparent 55%),
+      radial-gradient(ellipse 60% 60% at 80% 70%, rgba(123,47,190,0.2) 0%, transparent 55%),
+      radial-gradient(ellipse 50% 40% at 50% 10%, rgba(255,214,0,0.08) 0%, transparent 50%);
+    pointer-events: none;
+  }
+
+  .login-card {
+    position: relative; z-index: 1;
+    background: var(--gris-fonce);
+    border: 1px solid var(--gris-moyen);
+    border-radius: 24px;
+    padding: 48px 44px;
+    width: min(420px, 90vw);
+    box-shadow: var(--shadow), 0 0 0 1px rgba(255,255,255,0.04);
+    animation: slideUp 0.5s cubic-bezier(0.23,1,0.32,1);
+  }
+
+  .login-logo {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 36px;
+  }
+
+  .logo-mark {
+    width: 44px; height: 44px;
+    background: linear-gradient(135deg, var(--rouge), var(--violet));
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; font-weight: 800; color: white;
+    font-family: 'Space Mono', monospace;
+    flex-shrink: 0;
+  }
+
+  .logo-text { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; }
+  .logo-text span { color: var(--rouge); }
+
+  .login-title {
+    font-size: 28px; font-weight: 800;
+    line-height: 1.15; margin-bottom: 8px;
+    letter-spacing: -0.5px;
+  }
+
+  .login-sub {
+    color: var(--texte-doux); font-size: 14px;
+    margin-bottom: 32px; line-height: 1.6;
+  }
+
+  .field-label {
+    font-size: 12px; font-weight: 700;
+    letter-spacing: 1.5px; text-transform: uppercase;
+    color: var(--texte-doux); margin-bottom: 8px;
+  }
+
+  .login-input {
+    width: 100%;
+    background: var(--gris-moyen);
+    border: 1.5px solid var(--gris-clair);
+    border-radius: var(--radius-sm);
+    padding: 14px 18px;
+    color: var(--texte);
+    font-family: 'Syne', sans-serif;
+    font-size: 15px; font-weight: 600;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    margin-bottom: 20px;
+  }
+
+  .login-input:focus {
+    border-color: var(--bleu);
+    box-shadow: 0 0 0 3px rgba(26,110,255,0.18);
+  }
+
+  .btn-join {
+    width: 100%;
+    padding: 15px;
+    background: linear-gradient(135deg, var(--rouge) 0%, var(--violet) 100%);
+    border: none; border-radius: var(--radius-sm);
+    color: white; font-family: 'Syne', sans-serif;
+    font-size: 15px; font-weight: 700;
+    letter-spacing: 0.3px;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s, opacity 0.15s;
+    box-shadow: 0 4px 20px rgba(232,25,44,0.35);
+    position: relative; overflow: hidden;
+  }
+
+  .btn-join::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent);
+  }
+
+  .btn-join:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(232,25,44,0.45); }
+  .btn-join:active { transform: translateY(0); }
+
+  /* ─── APP LAYOUT ─── */
+  #app {
+    display: none;
+    height: 100dvh;
+    position: relative; z-index: 1;
+  }
+
+  #app.visible { display: flex; }
+
+  .sidebar {
+    width: 280px; flex-shrink: 0;
+    background: var(--gris-fonce);
+    border-right: 1px solid var(--gris-moyen);
+    display: flex; flex-direction: column;
+    height: 100dvh;
+    position: relative; z-index: 2;
+  }
+
+  .sidebar-header {
+    padding: 20px 20px 16px;
+    border-bottom: 1px solid var(--gris-moyen);
+  }
+
+  .app-logo {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .app-logo .logo-mark { width: 36px; height: 36px; font-size: 16px; border-radius: 10px; }
+  .app-logo .logo-text { font-size: 17px; font-weight: 800; }
+
+  .room-info {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--gris-moyen);
+    border-radius: var(--radius-sm);
+    padding: 10px 12px;
+  }
+
+  .room-dot {
+    width: 8px; height: 8px;
+    background: var(--jaune);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+    flex-shrink: 0;
+  }
+
+  .room-name { font-size: 13px; font-weight: 700; }
+  .room-count { font-size: 11px; color: var(--texte-doux); margin-left: auto; }
+
+  .members-section { padding: 16px 20px; flex: 1; overflow-y: auto; }
+
+  .members-title {
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 2px; text-transform: uppercase;
+    color: var(--texte-doux); margin-bottom: 12px;
+  }
+
+  .member-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    animation: fadeIn 0.3s ease;
+  }
+
+  .member-avatar {
+    width: 34px; height: 34px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 800; color: white;
+    flex-shrink: 0;
+    font-family: 'Space Mono', monospace;
+  }
+
+  .member-name { font-size: 13px; font-weight: 600; flex: 1; }
+  .member-status { font-size: 10px; color: #4ADE80; font-weight: 600; }
+
+  .sidebar-footer {
+    padding: 16px 20px;
+    border-top: 1px solid var(--gris-moyen);
+  }
+
+  .current-user {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 12px;
+  }
+
+  .current-user .member-avatar { width: 38px; height: 38px; font-size: 15px; border-radius: 11px; }
+
+  .current-user-name { font-size: 14px; font-weight: 700; }
+  .current-user-role { font-size: 11px; color: var(--texte-doux); }
+
+  .btn-logout {
+    width: 100%;
+    padding: 10px;
+    background: rgba(232,25,44,0.12);
+    border: 1px solid rgba(232,25,44,0.25);
+    border-radius: var(--radius-sm);
+    color: var(--rouge);
+    font-family: 'Syne', sans-serif;
+    font-size: 13px; font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+  }
+
+  .btn-logout:hover { background: rgba(232,25,44,0.22); border-color: rgba(232,25,44,0.4); }
+
+  /* ─── CHAT AREA ─── */
+  .chat-area {
+    flex: 1; display: flex; flex-direction: column;
+    min-width: 0; height: 100dvh;
+  }
+
+  .chat-header {
+    padding: 16px 24px;
+    background: var(--gris-fonce);
+    border-bottom: 1px solid var(--gris-moyen);
+    display: flex; align-items: center; gap: 12px;
+    flex-shrink: 0;
+  }
+
+  .chat-header-icon {
+    width: 40px; height: 40px;
+    background: linear-gradient(135deg, var(--bleu), var(--violet));
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  .chat-header-title { font-size: 16px; font-weight: 800; }
+  .chat-header-sub { font-size: 12px; color: var(--texte-doux); }
+  .chat-header-actions { margin-left: auto; display: flex; gap: 8px; }
+
+  .header-btn {
+    width: 36px; height: 36px;
+    background: var(--gris-moyen);
+    border: 1px solid var(--gris-clair);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; cursor: pointer;
+    transition: background 0.2s;
+    color: var(--texte);
+  }
+
+  .header-btn:hover { background: var(--gris-clair); }
+
+  /* ─── MESSAGES ─── */
+  #messages {
+    flex: 1; overflow-y: auto;
+    padding: 20px 24px;
+    display: flex; flex-direction: column; gap: 4px;
+    scroll-behavior: smooth;
+  }
+
+  #messages::-webkit-scrollbar { width: 4px; }
+  #messages::-webkit-scrollbar-track { background: transparent; }
+  #messages::-webkit-scrollbar-thumb { background: var(--gris-clair); border-radius: 2px; }
+
+  .msg-group { margin-bottom: 12px; }
+
+  .msg-header {
+    display: flex; align-items: baseline; gap: 8px;
+    margin-bottom: 4px; padding-left: 44px;
+  }
+
+  .msg-sender { font-size: 13px; font-weight: 700; }
+  .msg-time { font-size: 11px; color: var(--texte-doux); font-family: 'Space Mono', monospace; }
+
+  .msg-row {
+    display: flex; align-items: flex-start; gap: 10px;
+  }
+
+  .msg-avatar {
+    width: 34px; height: 34px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 800; color: white;
+    flex-shrink: 0; font-family: 'Space Mono', monospace;
+    margin-top: 2px;
+  }
+
+  .msg-bubble {
+    max-width: min(520px, 75%);
+    background: var(--gris-moyen);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 4px 16px 16px 16px;
+    padding: 10px 14px;
+    font-size: 14px; line-height: 1.55;
+    animation: msgIn 0.25s cubic-bezier(0.23,1,0.32,1);
+    word-break: break-word;
+  }
+
+  .msg-bubble.own {
+    background: linear-gradient(135deg, rgba(26,110,255,0.25), rgba(123,47,190,0.2));
+    border-color: rgba(26,110,255,0.25);
+    border-radius: 16px 4px 16px 16px;
+    margin-left: auto;
+  }
+
+  .msg-row.own { flex-direction: row-reverse; }
+  .msg-row.own .msg-header { padding-left: 0; padding-right: 44px; justify-content: flex-end; }
+
+  /* Image messages */
+  .msg-image {
+    max-width: 280px; max-height: 220px;
+    border-radius: 12px; cursor: pointer;
+    object-fit: cover; display: block;
+    transition: opacity 0.2s;
+    margin-top: 4px;
+  }
+  .msg-image:hover { opacity: 0.9; }
+
+  /* Voice messages */
+  .voice-msg {
+    display: flex; align-items: center; gap: 10px;
+    min-width: 200px;
+  }
+
+  .voice-play {
+    width: 32px; height: 32px;
+    background: linear-gradient(135deg, var(--rouge), var(--violet));
+    border: none; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; color: white; font-size: 12px;
+    flex-shrink: 0;
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .voice-play:hover { transform: scale(1.08); box-shadow: 0 4px 12px rgba(232,25,44,0.4); }
+
+  .voice-waveform {
+    flex: 1; height: 28px;
+    display: flex; align-items: center; gap: 2px;
+    overflow: hidden;
+  }
+
+  .voice-bar {
+    width: 3px; border-radius: 2px;
+    background: var(--texte-doux);
+    animation: waveAnim 1.2s ease-in-out infinite;
+  }
+
+  .voice-duration { font-size: 11px; color: var(--texte-doux); font-family: 'Space Mono', monospace; white-space: nowrap; }
+
+  /* Notifications */
+  .notif-msg {
+    text-align: center; margin: 8px 0;
+    animation: fadeIn 0.3s ease;
+  }
+
+  .notif-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(255,214,0,0.1);
+    border: 1px solid rgba(255,214,0,0.2);
+    border-radius: 20px;
+    padding: 5px 14px;
+    font-size: 12px; font-weight: 600;
+    color: var(--jaune);
+  }
+
+  /* ─── INPUT AREA ─── */
+  .input-area {
+    padding: 16px 20px;
+    background: var(--gris-fonce);
+    border-top: 1px solid var(--gris-moyen);
+    flex-shrink: 0;
+  }
+
+  .input-toolbar {
+    display: flex; gap: 6px;
+    margin-bottom: 10px;
+  }
+
+  .tool-btn {
+    display: flex; align-items: center; gap: 5px;
+    padding: 6px 12px;
+    background: var(--gris-moyen);
+    border: 1px solid var(--gris-clair);
+    border-radius: 8px;
+    color: var(--texte-doux);
+    font-family: 'Syne', sans-serif;
+    font-size: 12px; font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+
+  .tool-btn:hover { background: var(--gris-clair); color: var(--texte); }
+  .tool-btn.recording { background: rgba(232,25,44,0.15); border-color: var(--rouge); color: var(--rouge); animation: recordPulse 1s infinite; }
+
+  .input-row {
+    display: flex; align-items: flex-end; gap: 10px;
+  }
+
+  #msg-input {
+    flex: 1;
+    background: var(--gris-moyen);
+    border: 1.5px solid var(--gris-clair);
+    border-radius: 14px;
+    padding: 12px 16px;
+    color: var(--texte);
+    font-family: 'Syne', sans-serif;
+    font-size: 14px; font-weight: 500;
+    outline: none;
+    resize: none; max-height: 120px;
+    line-height: 1.5;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  #msg-input:focus {
+    border-color: var(--bleu);
+    box-shadow: 0 0 0 3px rgba(26,110,255,0.12);
+  }
+
+  #msg-input::placeholder { color: var(--texte-doux); }
+
+  .send-btn {
+    width: 44px; height: 44px; flex-shrink: 0;
+    background: linear-gradient(135deg, var(--bleu), var(--violet));
+    border: none; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; color: white;
+    font-size: 17px;
+    transition: transform 0.15s, box-shadow 0.15s;
+    box-shadow: 0 4px 14px rgba(26,110,255,0.35);
+  }
+
+  .send-btn:hover { transform: translateY(-2px); box-shadow: 0 7px 20px rgba(26,110,255,0.45); }
+  .send-btn:active { transform: scale(0.95); }
+
+  #image-input { display: none; }
+
+  /* ─── TOAST ─── */
+  #toast-container {
+    position: fixed; top: 16px; right: 16px;
+    z-index: 9999; display: flex; flex-direction: column; gap: 8px;
+    pointer-events: none;
+  }
+
+  .toast {
+    background: var(--gris-fonce);
+    border: 1px solid var(--gris-clair);
+    border-radius: 12px;
+    padding: 12px 18px;
+    font-size: 13px; font-weight: 600;
+    color: var(--texte);
+    box-shadow: var(--shadow);
+    display: flex; align-items: center; gap: 8px;
+    animation: toastIn 0.3s cubic-bezier(0.23,1,0.32,1);
+    max-width: 300px;
+  }
+
+  .toast-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+  /* ─── MOBILE TOGGLE ─── */
+  .mobile-sidebar-toggle {
+    display: none;
+    position: fixed; bottom: 80px; right: 16px;
+    width: 44px; height: 44px;
+    background: linear-gradient(135deg, var(--rouge), var(--violet));
+    border: none; border-radius: 12px;
+    color: white; font-size: 18px;
+    cursor: pointer; z-index: 50;
+    box-shadow: 0 4px 16px rgba(232,25,44,0.4);
+    align-items: center; justify-content: center;
+    transition: transform 0.2s;
+  }
+
+  .mobile-sidebar-toggle:hover { transform: scale(1.08); }
+
+  /* ─── LIGHTBOX ─── */
+  #lightbox {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.85); z-index: 9998;
+    align-items: center; justify-content: center;
+    cursor: zoom-out;
+  }
+  #lightbox.open { display: flex; }
+  #lightbox img { max-width: 90vw; max-height: 90vh; border-radius: 16px; }
+
+  /* ─── ANIMATIONS ─── */
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes msgIn { from { opacity: 0; transform: translateY(10px) scale(0.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
+  @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.4;} }
+  @keyframes recordPulse { 0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(232,25,44,0.4);} 50%{opacity:0.85;box-shadow:0 0 0 5px rgba(232,25,44,0);} }
+  @keyframes toastIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+  @keyframes waveAnim { 0%,100%{transform:scaleY(0.4);} 50%{transform:scaleY(1);} }
+
+  /* ─── MOBILE ─── */
+  @media (max-width: 680px) {
+    .sidebar {
+      position: fixed; left: -280px; top: 0;
+      height: 100dvh; z-index: 200;
+      transition: left 0.3s cubic-bezier(0.23,1,0.32,1);
+    }
+    .sidebar.open { left: 0; }
+    .sidebar-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.5); z-index: 199;
+    }
+    .sidebar.open ~ .sidebar-overlay { display: block; }
+    .mobile-sidebar-toggle { display: flex; }
+    .chat-area { width: 100vw; }
+    .input-toolbar { flex-wrap: wrap; }
+    .tool-btn { font-size: 11px; padding: 5px 9px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══ LOGIN ═══ -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="logo-mark">TC</div>
+      <div class="logo-text">Team<span>Chat</span></div>
+    </div>
+    <div class="login-title">Rejoindre la<br>réunion d'équipe</div>
+    <div class="login-sub">Entrez votre nom pour accéder à l'espace de discussion en temps réel.</div>
+    <div class="field-label">Votre nom</div>
+    <input type="text" id="username-input" class="login-input" placeholder="Ex: Marie Dupont" maxlength="32" autocomplete="off">
+    <button class="btn-join" onclick="joinRoom()">Rejoindre la réunion →</button>
+  </div>
+</div>
+
+<!-- ═══ APP ═══ -->
+<div id="app">
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="app-logo">
+        <div class="logo-mark">TC</div>
+        <div class="logo-text">Team<span>Chat</span></div>
+      </div>
+      <div class="room-info">
+        <div class="room-dot"></div>
+        <span class="room-name">Réunion principale</span>
+        <span class="room-count" id="member-count">0 membres</span>
+      </div>
+    </div>
+
+    <div class="members-section">
+      <div class="members-title">Membres connectés</div>
+      <div id="members-list"></div>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="current-user">
+        <div class="member-avatar" id="my-avatar"></div>
+        <div>
+          <div class="current-user-name" id="my-name-display"></div>
+          <div class="current-user-role">En ligne</div>
+        </div>
+      </div>
+      <button class="btn-logout" onclick="leaveRoom()">
+        <span>⬡</span> Quitter la réunion
+      </button>
+    </div>
+  </aside>
+
+  <div class="sidebar-overlay" onclick="closeSidebar()"></div>
+
+  <!-- Chat -->
+  <main class="chat-area">
+    <div class="chat-header">
+      <div class="chat-header-icon">💬</div>
+      <div>
+        <div class="chat-header-title">Discussion générale</div>
+        <div class="chat-header-sub" id="header-status">Chargement…</div>
+      </div>
+      <div class="chat-header-actions">
+        <button class="header-btn" title="Participants" onclick="toggleSidebar()">👥</button>
+      </div>
+    </div>
+
+    <div id="messages"></div>
+
+    <div class="input-area">
+      <div class="input-toolbar">
+        <button class="tool-btn" onclick="document.getElementById('image-input').click()">🖼️ Image</button>
+        <button class="tool-btn" id="voice-btn" onclick="toggleVoice()">🎙️ Note vocale</button>
+      </div>
+      <div class="input-row">
+        <textarea id="msg-input" rows="1" placeholder="Écrivez votre message…"></textarea>
+        <button class="send-btn" onclick="sendMessage()">➤</button>
+      </div>
+      <input type="file" id="image-input" accept="image/*" onchange="sendImage(event)">
+    </div>
+  </main>
+
+  <button class="mobile-sidebar-toggle" onclick="toggleSidebar()">👥</button>
+</div>
+
+<!-- Lightbox -->
+<div id="lightbox" onclick="this.classList.remove('open')">
+  <img id="lightbox-img" src="" alt="">
+</div>
+
+<!-- Toast container -->
+<div id="toast-container"></div>
+
+<script>
+// ═══ STATE ═══
+let myName = '';
+let myColor = '';
+let members = {}; // id -> { name, color }
+let myId = '';
+let mediaRecorder = null;
+let recordingChunks = [];
+let isRecording = false;
+let recordStart = null;
+
+const COLORS = [
+  'linear-gradient(135deg,#E8192C,#FF6B35)',
+  'linear-gradient(135deg,#1A6EFF,#00C3FF)',
+  'linear-gradient(135deg,#7B2FBE,#E040FB)',
+  'linear-gradient(135deg,#FFD600,#FF8F00)',
+  'linear-gradient(135deg,#00BFA5,#1A6EFF)',
+  'linear-gradient(135deg,#E8192C,#7B2FBE)',
+  'linear-gradient(135deg,#FF6B35,#FFD600)',
+  'linear-gradient(135deg,#00C3FF,#7B2FBE)',
+];
+
+// Simulated multi-user via localStorage + BroadcastChannel
+const channel = new BroadcastChannel('Rev com_v2');
+const STORAGE_KEY = 'Rev com_members';
+const MSGS_KEY = 'Rev com_messages';
+
+// ═══ LOGIN ═══
+document.getElementById('username-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') joinRoom();
+});
+
+function joinRoom() {
+  const val = document.getElementById('username-input').value.trim();
+  if (!val) { shake(document.getElementById('username-input')); return; }
+  myName = val;
+  myId = 'user_' + Date.now() + '_' + Math.random().toString(36).slice(2,6);
+  myColor = COLORS[Math.floor(Math.random() * COLORS.length)];
+
+  // Register self
+  registerMember();
+
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app').classList.add('visible');
+
+  document.getElementById('my-name-display').textContent = myName;
+  const av = document.getElementById('my-avatar');
+  av.textContent = initials(myName);
+  av.style.background = myColor;
+
+  loadMessages();
+  updateMembersList();
+  updateHeaderStatus();
+
+  // Broadcast join
+  broadcast({ type: 'join', id: myId, name: myName, color: myColor });
+
+  // Post join notification
+  postSystemMsg(`🟢 ${myName} a rejoint la réunion`);
+
+  // Cleanup on close
+  window.addEventListener('beforeunload', leaveRoom);
+  document.getElementById('msg-input').focus();
+}
+
+function leaveRoom() {
+  if (!myId) return;
+  removeMember(myId);
+  broadcast({ type: 'leave', id: myId, name: myName });
+  postSystemMsg(`🔴 ${myName} a quitté la réunion`);
+  myId = '';
+  document.getElementById('app').classList.remove('visible');
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('username-input').value = '';
+  document.getElementById('messages').innerHTML = '';
+}
+
+// ═══ MEMBERS ═══
+function registerMember() {
+  const m = getMembers();
+  m[myId] = { name: myName, color: myColor, ts: Date.now() };
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(m));
+}
+
+function removeMember(id) {
+  const m = getMembers();
+  delete m[id];
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(m));
+}
+
+function getMembers() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); } catch { return {}; }
+}
+
+function updateMembersList() {
+  const m = getMembers();
+  const list = document.getElementById('members-list');
+  list.innerHTML = '';
+  let count = 0;
+  for (const [id, data] of Object.entries(m)) {
+    count++;
+    const div = document.createElement('div');
+    div.className = 'member-item';
+    div.innerHTML = `
+      <div class="member-avatar" style="background:${data.color}">${initials(data.name)}</div>
+      <div class="member-name">${esc(data.name)}${id === myId ? ' (moi)' : ''}</div>
+      <div class="member-status">En ligne</div>
+    `;
+    list.appendChild(div);
+  }
+  document.getElementById('member-count').textContent = count + (count > 1 ? ' membres' : ' membre');
+  updateHeaderStatus();
+}
+
+function updateHeaderStatus() {
+  const count = Object.keys(getMembers()).length;
+  document.getElementById('header-status').textContent = `${count} participant${count > 1 ? 's' : ''} · En réunion`;
+}
+
+// ═══ BROADCAST ═══
+channel.addEventListener('message', e => {
+  const d = e.data;
+  if (d.type === 'join') {
+    showToast(`🟢 ${d.name} a rejoint la réunion`, '#4ADE80');
+    updateMembersList();
+    updateHeaderStatus();
+  } else if (d.type === 'leave') {
+    showToast(`🔴 ${d.name} a quitté la réunion`, '#E8192C');
+    updateMembersList();
+    updateHeaderStatus();
+  } else if (d.type === 'message') {
+    renderMessage(d.msg);
+  }
+});
+
+function broadcast(data) {
+  channel.postMessage(data);
+}
+
+// ═══ MESSAGES ═══
+function getMessages() {
+  try { return JSON.parse(localStorage.getItem(MSGS_KEY) || '[]'); } catch { return []; }
+}
+
+function saveMessage(msg) {
+  const msgs = getMessages();
+  msgs.push(msg);
+  if (msgs.length > 200) msgs.splice(0, msgs.length - 200);
+  localStorage.setItem(MSGS_KEY, JSON.stringify(msgs));
+}
+
+function loadMessages() {
+  const msgs = getMessages();
+  const container = document.getElementById('messages');
+  container.innerHTML = '';
+  msgs.forEach(m => renderMessage(m, false));
+  scrollBottom();
+}
+
+function sendMessage() {
+  const input = document.getElementById('msg-input');
+  const text = input.value.trim();
+  if (!text || !myId) return;
+
+  const msg = {
+    id: 'msg_' + Date.now(),
+    type: 'text',
+    senderId: myId,
+    senderName: myName,
+    senderColor: myColor,
+    text,
+    time: now()
+  };
+  input.value = '';
+  input.style.height = '';
+  saveMessage(msg);
+  renderMessage(msg);
+  broadcast({ type: 'message', msg });
+}
+
+function sendImage(e) {
+  const file = e.target.files[0];
+  if (!file || !myId) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const msg = {
+      id: 'msg_' + Date.now(),
+      type: 'image',
+      senderId: myId,
+      senderName: myName,
+      senderColor: myColor,
+      src: ev.target.result,
+      time: now()
+    };
+    saveMessage(msg);
+    renderMessage(msg);
+    broadcast({ type: 'message', msg });
+  };
+  reader.readAsDataURL(file);
+  e.target.value = '';
+}
+
+function postSystemMsg(text) {
+  const msg = { id: 'sys_' + Date.now(), type: 'system', text };
+  saveMessage(msg);
+  renderMessage(msg);
+  broadcast({ type: 'message', msg });
+}
+
+function renderMessage(msg, doScroll = true) {
+  const container = document.getElementById('messages');
+
+  if (msg.type === 'system') {
+    const div = document.createElement('div');
+    div.className = 'notif-msg';
+    div.innerHTML = `<span class="notif-badge">${esc(msg.text)}</span>`;
+    container.appendChild(div);
+    if (doScroll) scrollBottom();
+    return;
+  }
+
+  const isOwn = msg.senderId === myId;
+  const group = document.createElement('div');
+  group.className = 'msg-group';
+
+  let contentHtml = '';
+  if (msg.type === 'text') {
+    contentHtml = `<div class="msg-bubble${isOwn ? ' own' : ''}">${esc(msg.text)}</div>`;
+  } else if (msg.type === 'image') {
+    contentHtml = `<div class="msg-bubble${isOwn ? ' own' : ''}" style="padding:6px;">
+      <img class="msg-image" src="${msg.src}" alt="Image" onclick="openLightbox('${msg.src}')">
+    </div>`;
+  } else if (msg.type === 'voice') {
+    contentHtml = `<div class="msg-bubble${isOwn ? ' own' : ''}">
+      <div class="voice-msg">
+        <button class="voice-play" onclick="playVoice('${msg.id}',this)" data-src="${msg.src}">▶</button>
+        <div class="voice-waveform">${generateWaveBars()}</div>
+        <span class="voice-duration">${msg.duration}</span>
+      </div>
+    </div>`;
+  }
+
+  group.innerHTML = `
+    <div class="msg-header${isOwn ? ' own' : ''}" style="${isOwn ? 'justify-content:flex-end' : ''}">
+      <span class="msg-sender" style="color:${firstColor(msg.senderColor)}">${esc(msg.senderName)}</span>
+      <span class="msg-time">${msg.time}</span>
+    </div>
+    <div class="msg-row${isOwn ? ' own' : ''}">
+      <div class="msg-avatar" style="background:${msg.senderColor}">${initials(msg.senderName)}</div>
+      ${contentHtml}
+    </div>
+  `;
+
+  // Store voice src for playback
+  if (msg.type === 'voice') {
+    group._voiceSrc = msg.src;
+  }
+
+  container.appendChild(group);
+  if (doScroll) scrollBottom();
+}
+
+// ═══ VOICE ═══
+async function toggleVoice() {
+  const btn = document.getElementById('voice-btn');
+  if (!isRecording) {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mediaRecorder = new MediaRecorder(stream);
+      recordingChunks = [];
+      recordStart = Date.now();
+      mediaRecorder.ondataavailable = e => recordingChunks.push(e.data);
+      mediaRecorder.onstop = () => {
+        const blob = new Blob(recordingChunks, { type: 'audio/webm' });
+        const duration = Math.round((Date.now() - recordStart) / 1000);
+        const mins = Math.floor(duration / 60).toString().padStart(2,'0');
+        const secs = (duration % 60).toString().padStart(2,'0');
+        const reader = new FileReader();
+        reader.onload = ev => {
+          const msg = {
+            id: 'voice_' + Date.now(),
+            type: 'voice',
+            senderId: myId,
+            senderName: myName,
+            senderColor: myColor,
+            src: ev.target.result,
+            duration: `${mins}:${secs}`,
+            time: now()
+          };
+          saveMessage(msg);
+          renderMessage(msg);
+          broadcast({ type: 'message', msg });
+        };
+        reader.readAsDataURL(blob);
+        stream.getTracks().forEach(t => t.stop());
+      };
+      mediaRecorder.start();
+      isRecording = true;
+      btn.classList.add('recording');
+      btn.textContent = '⏹ Arrêter';
+    } catch {
+      showToast('🎙️ Accès micro refusé', '#E8192C');
+    }
+  } else {
+    mediaRecorder.stop();
+    isRecording = false;
+    btn.classList.remove('recording');
+    btn.textContent = '🎙️ Note vocale';
+  }
+}
+
+function playVoice(id, btn) {
+  const src = btn.dataset.src;
+  if (!src) return;
+  const audio = new Audio(src);
+  btn.textContent = '⏸';
+  audio.play();
+  audio.onended = () => { btn.textContent = '▶'; };
+  audio.onerror = () => { btn.textContent = '▶'; showToast('Impossible de lire l\'audio', '#E8192C'); };
+}
+
+function generateWaveBars() {
+  let html = '';
+  for (let i = 0; i < 28; i++) {
+    const h = 6 + Math.random() * 22;
+    const delay = (i * 0.08).toFixed(2);
+    html += `<div class="voice-bar" style="height:${h}px;animation-delay:${delay}s"></div>`;
+  }
+  return html;
+}
+
+// ═══ LIGHTBOX ═══
+function openLightbox(src) {
+  document.getElementById('lightbox-img').src = src;
+  document.getElementById('lightbox').classList.add('open');
+}
+
+// ═══ TOAST ═══
+function showToast(text, color = '#FFD600') {
+  const c = document.getElementById('toast-container');
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.innerHTML = `<div class="toast-dot" style="background:${color}"></div>${text}`;
+  c.appendChild(t);
+  setTimeout(() => {
+    t.style.transition = 'opacity 0.3s';
+    t.style.opacity = '0';
+    setTimeout(() => t.remove(), 300);
+  }, 3500);
+}
+
+// ═══ SIDEBAR MOBILE ═══
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+}
+
+// ═══ AUTO-RESIZE TEXTAREA ═══
+document.addEventListener('DOMContentLoaded', () => {
+  const ta = document.getElementById('msg-input');
+  if (ta) {
+    ta.addEventListener('input', function() {
+      this.style.height = 'auto';
+      this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+    });
+    ta.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+    });
+  }
+});
+
+// ═══ UTILS ═══
+function initials(name) {
+  return name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
+}
+
+function now() {
+  return new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+}
+
+function esc(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+}
+
+function firstColor(grad) {
+  const m = grad.match(/#[0-9A-Fa-f]{6}/);
+  return m ? m[0] : '#fff';
+}
+
+function scrollBottom() {
+  const c = document.getElementById('messages');
+  requestAnimationFrame(() => { c.scrollTop = c.scrollHeight; });
+}
+
+function shake(el) {
+  el.style.animation = 'none';
+  el.style.borderColor = 'var(--rouge)';
+  el.style.boxShadow = '0 0 0 3px rgba(232,25,44,0.2)';
+  setTimeout(() => { el.style.borderColor = ''; el.style.boxShadow = ''; }, 800);
+}
+
+// Heartbeat: clean stale members (>30s old) & refresh list
+setInterval(() => {
+  if (!myId) return;
+  registerMember(); // refresh own timestamp
+  const m = getMembers();
+  const now = Date.now();
+  let changed = false;
+  for (const [id, data] of Object.entries(m)) {
+    if (now - data.ts > 30000) { delete m[id]; changed = true; }
+  }
+  if (changed) localStorage.setItem(STORAGE_KEY, JSON.stringify(m));
+  updateMembersList();
+}, 8000);
+</script>
+</body>
+</html>
