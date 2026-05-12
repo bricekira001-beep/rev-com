@@ -3,1069 +3,2197 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Rev com — Réunion d'équipe</title>
-<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<title>Rev Com — Organisation d'équipe</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --rouge: #E8192C;
-    --jaune: #FFD600;
-    --bleu: #1A6EFF;
-    --violet: #7B2FBE;
-    --noir: #0D0D0F;
-    --gris-fonce: #1A1A1F;
-    --gris-moyen: #2A2A35;
-    --gris-clair: #3A3A48;
-    --texte: #F0F0F5;
-    --texte-doux: #9898B0;
-    --radius: 14px;
-    --radius-sm: 8px;
-    --shadow: 0 8px 32px rgba(0,0,0,0.45);
-  }
-
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-
-  body {
-    font-family: 'Syne', sans-serif;
-    background: var(--noir);
-    color: var(--texte);
-    height: 100dvh;
-    overflow: hidden;
-    position: relative;
-  }
-
-  /* ─── FOND ANIMÉ ─── */
-  body::before {
-    content: '';
-    position: fixed; inset: 0;
-    background:
-      radial-gradient(ellipse 60% 40% at 10% 20%, rgba(232,25,44,0.12) 0%, transparent 60%),
-      radial-gradient(ellipse 50% 50% at 90% 80%, rgba(123,47,190,0.14) 0%, transparent 60%),
-      radial-gradient(ellipse 40% 40% at 50% 50%, rgba(26,110,255,0.06) 0%, transparent 60%);
-    pointer-events: none; z-index: 0;
-  }
-
-  /* ─── LOGIN ─── */
-  #login-screen {
-    position: fixed; inset: 0; z-index: 100;
-    display: flex; align-items: center; justify-content: center;
-    background: var(--noir);
-    animation: fadeIn 0.4s ease;
-  }
-
-  #login-screen::before {
-    content: '';
-    position: absolute; inset: 0;
-    background:
-      radial-gradient(ellipse 70% 60% at 20% 30%, rgba(232,25,44,0.18) 0%, transparent 55%),
-      radial-gradient(ellipse 60% 60% at 80% 70%, rgba(123,47,190,0.2) 0%, transparent 55%),
-      radial-gradient(ellipse 50% 40% at 50% 10%, rgba(255,214,0,0.08) 0%, transparent 50%);
-    pointer-events: none;
-  }
-
-  .login-card {
-    position: relative; z-index: 1;
-    background: var(--gris-fonce);
-    border: 1px solid var(--gris-moyen);
-    border-radius: 24px;
-    padding: 48px 44px;
-    width: min(420px, 90vw);
-    box-shadow: var(--shadow), 0 0 0 1px rgba(255,255,255,0.04);
-    animation: slideUp 0.5s cubic-bezier(0.23,1,0.32,1);
-  }
-
-  .login-logo {
-    display: flex; align-items: center; gap: 12px;
-    margin-bottom: 36px;
-  }
-
-  .logo-mark {
-    width: 44px; height: 44px;
-    background: linear-gradient(135deg, var(--rouge), var(--violet));
-    border-radius: 12px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 20px; font-weight: 800; color: white;
-    font-family: 'Space Mono', monospace;
-    flex-shrink: 0;
-  }
-
-  .logo-text { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; }
-  .logo-text span { color: var(--rouge); }
-
-  .login-title {
-    font-size: 28px; font-weight: 800;
-    line-height: 1.15; margin-bottom: 8px;
-    letter-spacing: -0.5px;
-  }
-
-  .login-sub {
-    color: var(--texte-doux); font-size: 14px;
-    margin-bottom: 32px; line-height: 1.6;
-  }
-
-  .field-label {
-    font-size: 12px; font-weight: 700;
-    letter-spacing: 1.5px; text-transform: uppercase;
-    color: var(--texte-doux); margin-bottom: 8px;
-  }
-
-  .login-input {
-    width: 100%;
-    background: var(--gris-moyen);
-    border: 1.5px solid var(--gris-clair);
-    border-radius: var(--radius-sm);
-    padding: 14px 18px;
-    color: var(--texte);
-    font-family: 'Syne', sans-serif;
-    font-size: 15px; font-weight: 600;
-    outline: none;
-    transition: border-color 0.2s, box-shadow 0.2s;
-    margin-bottom: 20px;
-  }
-
-  .login-input:focus {
-    border-color: var(--bleu);
-    box-shadow: 0 0 0 3px rgba(26,110,255,0.18);
-  }
-
-  .btn-join {
-    width: 100%;
-    padding: 15px;
-    background: linear-gradient(135deg, var(--rouge) 0%, var(--violet) 100%);
-    border: none; border-radius: var(--radius-sm);
-    color: white; font-family: 'Syne', sans-serif;
-    font-size: 15px; font-weight: 700;
-    letter-spacing: 0.3px;
-    cursor: pointer;
-    transition: transform 0.15s, box-shadow 0.15s, opacity 0.15s;
-    box-shadow: 0 4px 20px rgba(232,25,44,0.35);
-    position: relative; overflow: hidden;
-  }
-
-  .btn-join::after {
-    content: '';
-    position: absolute; inset: 0;
-    background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent);
-  }
-
-  .btn-join:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(232,25,44,0.45); }
-  .btn-join:active { transform: translateY(0); }
-
-  /* ─── APP LAYOUT ─── */
-  #app {
-    display: none;
-    height: 100dvh;
-    position: relative; z-index: 1;
-  }
-
-  #app.visible { display: flex; }
-
-  .sidebar {
-    width: 280px; flex-shrink: 0;
-    background: var(--gris-fonce);
-    border-right: 1px solid var(--gris-moyen);
-    display: flex; flex-direction: column;
-    height: 100dvh;
-    position: relative; z-index: 2;
-  }
-
-  .sidebar-header {
-    padding: 20px 20px 16px;
-    border-bottom: 1px solid var(--gris-moyen);
-  }
-
-  .app-logo {
-    display: flex; align-items: center; gap: 10px;
-    margin-bottom: 16px;
-  }
-
-  .app-logo .logo-mark { width: 36px; height: 36px; font-size: 16px; border-radius: 10px; }
-  .app-logo .logo-text { font-size: 17px; font-weight: 800; }
-
-  .room-info {
-    display: flex; align-items: center; gap: 8px;
-    background: var(--gris-moyen);
-    border-radius: var(--radius-sm);
-    padding: 10px 12px;
-  }
-
-  .room-dot {
-    width: 8px; height: 8px;
-    background: var(--jaune);
-    border-radius: 50%;
-    animation: pulse 2s infinite;
-    flex-shrink: 0;
-  }
-
-  .room-name { font-size: 13px; font-weight: 700; }
-  .room-count { font-size: 11px; color: var(--texte-doux); margin-left: auto; }
-
-  .members-section { padding: 16px 20px; flex: 1; overflow-y: auto; }
-
-  .members-title {
-    font-size: 10px; font-weight: 700;
-    letter-spacing: 2px; text-transform: uppercase;
-    color: var(--texte-doux); margin-bottom: 12px;
-  }
-
-  .member-item {
-    display: flex; align-items: center; gap: 10px;
-    padding: 9px 0;
-    border-bottom: 1px solid rgba(255,255,255,0.04);
-    animation: fadeIn 0.3s ease;
-  }
-
-  .member-avatar {
-    width: 34px; height: 34px; border-radius: 10px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 14px; font-weight: 800; color: white;
-    flex-shrink: 0;
-    font-family: 'Space Mono', monospace;
-  }
-
-  .member-name { font-size: 13px; font-weight: 600; flex: 1; }
-  .member-status { font-size: 10px; color: #4ADE80; font-weight: 600; }
-
-  .sidebar-footer {
-    padding: 16px 20px;
-    border-top: 1px solid var(--gris-moyen);
-  }
-
-  .current-user {
-    display: flex; align-items: center; gap: 10px;
-    margin-bottom: 12px;
-  }
-
-  .current-user .member-avatar { width: 38px; height: 38px; font-size: 15px; border-radius: 11px; }
-
-  .current-user-name { font-size: 14px; font-weight: 700; }
-  .current-user-role { font-size: 11px; color: var(--texte-doux); }
-
-  .btn-logout {
-    width: 100%;
-    padding: 10px;
-    background: rgba(232,25,44,0.12);
-    border: 1px solid rgba(232,25,44,0.25);
-    border-radius: var(--radius-sm);
-    color: var(--rouge);
-    font-family: 'Syne', sans-serif;
-    font-size: 13px; font-weight: 700;
-    cursor: pointer;
-    transition: background 0.2s, border-color 0.2s;
-    display: flex; align-items: center; justify-content: center; gap: 6px;
-  }
-
-  .btn-logout:hover { background: rgba(232,25,44,0.22); border-color: rgba(232,25,44,0.4); }
-
-  /* ─── CHAT AREA ─── */
-  .chat-area {
-    flex: 1; display: flex; flex-direction: column;
-    min-width: 0; height: 100dvh;
-  }
-
-  .chat-header {
-    padding: 16px 24px;
-    background: var(--gris-fonce);
-    border-bottom: 1px solid var(--gris-moyen);
-    display: flex; align-items: center; gap: 12px;
-    flex-shrink: 0;
-  }
-
-  .chat-header-icon {
-    width: 40px; height: 40px;
-    background: linear-gradient(135deg, var(--bleu), var(--violet));
-    border-radius: 12px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 18px;
-    flex-shrink: 0;
-  }
-
-  .chat-header-title { font-size: 16px; font-weight: 800; }
-  .chat-header-sub { font-size: 12px; color: var(--texte-doux); }
-  .chat-header-actions { margin-left: auto; display: flex; gap: 8px; }
-
-  .header-btn {
-    width: 36px; height: 36px;
-    background: var(--gris-moyen);
-    border: 1px solid var(--gris-clair);
-    border-radius: 10px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 16px; cursor: pointer;
-    transition: background 0.2s;
-    color: var(--texte);
-  }
-
-  .header-btn:hover { background: var(--gris-clair); }
-
-  /* ─── MESSAGES ─── */
-  #messages {
-    flex: 1; overflow-y: auto;
-    padding: 20px 24px;
-    display: flex; flex-direction: column; gap: 4px;
-    scroll-behavior: smooth;
-  }
-
-  #messages::-webkit-scrollbar { width: 4px; }
-  #messages::-webkit-scrollbar-track { background: transparent; }
-  #messages::-webkit-scrollbar-thumb { background: var(--gris-clair); border-radius: 2px; }
-
-  .msg-group { margin-bottom: 12px; }
-
-  .msg-header {
-    display: flex; align-items: baseline; gap: 8px;
-    margin-bottom: 4px; padding-left: 44px;
-  }
-
-  .msg-sender { font-size: 13px; font-weight: 700; }
-  .msg-time { font-size: 11px; color: var(--texte-doux); font-family: 'Space Mono', monospace; }
-
-  .msg-row {
-    display: flex; align-items: flex-start; gap: 10px;
-  }
-
-  .msg-avatar {
-    width: 34px; height: 34px; border-radius: 10px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 13px; font-weight: 800; color: white;
-    flex-shrink: 0; font-family: 'Space Mono', monospace;
-    margin-top: 2px;
-  }
-
-  .msg-bubble {
-    max-width: min(520px, 75%);
-    background: var(--gris-moyen);
-    border: 1px solid rgba(255,255,255,0.06);
-    border-radius: 4px 16px 16px 16px;
-    padding: 10px 14px;
-    font-size: 14px; line-height: 1.55;
-    animation: msgIn 0.25s cubic-bezier(0.23,1,0.32,1);
-    word-break: break-word;
-  }
-
-  .msg-bubble.own {
-    background: linear-gradient(135deg, rgba(26,110,255,0.25), rgba(123,47,190,0.2));
-    border-color: rgba(26,110,255,0.25);
-    border-radius: 16px 4px 16px 16px;
-    margin-left: auto;
-  }
-
-  .msg-row.own { flex-direction: row-reverse; }
-  .msg-row.own .msg-header { padding-left: 0; padding-right: 44px; justify-content: flex-end; }
-
-  /* Image messages */
-  .msg-image {
-    max-width: 280px; max-height: 220px;
-    border-radius: 12px; cursor: pointer;
-    object-fit: cover; display: block;
-    transition: opacity 0.2s;
-    margin-top: 4px;
-  }
-  .msg-image:hover { opacity: 0.9; }
-
-  /* Voice messages */
-  .voice-msg {
-    display: flex; align-items: center; gap: 10px;
-    min-width: 200px;
-  }
-
-  .voice-play {
-    width: 32px; height: 32px;
-    background: linear-gradient(135deg, var(--rouge), var(--violet));
-    border: none; border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    cursor: pointer; color: white; font-size: 12px;
-    flex-shrink: 0;
-    transition: transform 0.15s, box-shadow 0.15s;
-  }
-  .voice-play:hover { transform: scale(1.08); box-shadow: 0 4px 12px rgba(232,25,44,0.4); }
-
-  .voice-waveform {
-    flex: 1; height: 28px;
-    display: flex; align-items: center; gap: 2px;
-    overflow: hidden;
-  }
-
-  .voice-bar {
-    width: 3px; border-radius: 2px;
-    background: var(--texte-doux);
-    animation: waveAnim 1.2s ease-in-out infinite;
-  }
-
-  .voice-duration { font-size: 11px; color: var(--texte-doux); font-family: 'Space Mono', monospace; white-space: nowrap; }
-
-  /* Notifications */
-  .notif-msg {
-    text-align: center; margin: 8px 0;
-    animation: fadeIn 0.3s ease;
-  }
-
-  .notif-badge {
-    display: inline-flex; align-items: center; gap: 6px;
-    background: rgba(255,214,0,0.1);
-    border: 1px solid rgba(255,214,0,0.2);
-    border-radius: 20px;
-    padding: 5px 14px;
-    font-size: 12px; font-weight: 600;
-    color: var(--jaune);
-  }
-
-  /* ─── INPUT AREA ─── */
-  .input-area {
-    padding: 16px 20px;
-    background: var(--gris-fonce);
-    border-top: 1px solid var(--gris-moyen);
-    flex-shrink: 0;
-  }
-
-  .input-toolbar {
-    display: flex; gap: 6px;
-    margin-bottom: 10px;
-  }
-
-  .tool-btn {
-    display: flex; align-items: center; gap: 5px;
-    padding: 6px 12px;
-    background: var(--gris-moyen);
-    border: 1px solid var(--gris-clair);
-    border-radius: 8px;
-    color: var(--texte-doux);
-    font-family: 'Syne', sans-serif;
-    font-size: 12px; font-weight: 600;
-    cursor: pointer;
-    transition: all 0.15s;
-    white-space: nowrap;
-  }
-
-  .tool-btn:hover { background: var(--gris-clair); color: var(--texte); }
-  .tool-btn.recording { background: rgba(232,25,44,0.15); border-color: var(--rouge); color: var(--rouge); animation: recordPulse 1s infinite; }
-
-  .input-row {
-    display: flex; align-items: flex-end; gap: 10px;
-  }
-
-  #msg-input {
-    flex: 1;
-    background: var(--gris-moyen);
-    border: 1.5px solid var(--gris-clair);
-    border-radius: 14px;
-    padding: 12px 16px;
-    color: var(--texte);
-    font-family: 'Syne', sans-serif;
-    font-size: 14px; font-weight: 500;
-    outline: none;
-    resize: none; max-height: 120px;
-    line-height: 1.5;
-    transition: border-color 0.2s, box-shadow 0.2s;
-  }
-
-  #msg-input:focus {
-    border-color: var(--bleu);
-    box-shadow: 0 0 0 3px rgba(26,110,255,0.12);
-  }
-
-  #msg-input::placeholder { color: var(--texte-doux); }
-
-  .send-btn {
-    width: 44px; height: 44px; flex-shrink: 0;
-    background: linear-gradient(135deg, var(--bleu), var(--violet));
-    border: none; border-radius: 12px;
-    display: flex; align-items: center; justify-content: center;
-    cursor: pointer; color: white;
-    font-size: 17px;
-    transition: transform 0.15s, box-shadow 0.15s;
-    box-shadow: 0 4px 14px rgba(26,110,255,0.35);
-  }
-
-  .send-btn:hover { transform: translateY(-2px); box-shadow: 0 7px 20px rgba(26,110,255,0.45); }
-  .send-btn:active { transform: scale(0.95); }
-
-  #image-input { display: none; }
-
-  /* ─── TOAST ─── */
-  #toast-container {
-    position: fixed; top: 16px; right: 16px;
-    z-index: 9999; display: flex; flex-direction: column; gap: 8px;
-    pointer-events: none;
-  }
-
-  .toast {
-    background: var(--gris-fonce);
-    border: 1px solid var(--gris-clair);
-    border-radius: 12px;
-    padding: 12px 18px;
-    font-size: 13px; font-weight: 600;
-    color: var(--texte);
-    box-shadow: var(--shadow);
-    display: flex; align-items: center; gap: 8px;
-    animation: toastIn 0.3s cubic-bezier(0.23,1,0.32,1);
-    max-width: 300px;
-  }
-
-  .toast-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-
-  /* ─── MOBILE TOGGLE ─── */
-  .mobile-sidebar-toggle {
-    display: none;
-    position: fixed; bottom: 80px; right: 16px;
-    width: 44px; height: 44px;
-    background: linear-gradient(135deg, var(--rouge), var(--violet));
-    border: none; border-radius: 12px;
-    color: white; font-size: 18px;
-    cursor: pointer; z-index: 50;
-    box-shadow: 0 4px 16px rgba(232,25,44,0.4);
-    align-items: center; justify-content: center;
-    transition: transform 0.2s;
-  }
-
-  .mobile-sidebar-toggle:hover { transform: scale(1.08); }
-
-  /* ─── LIGHTBOX ─── */
-  #lightbox {
-    display: none; position: fixed; inset: 0;
-    background: rgba(0,0,0,0.85); z-index: 9998;
-    align-items: center; justify-content: center;
-    cursor: zoom-out;
-  }
-  #lightbox.open { display: flex; }
-  #lightbox img { max-width: 90vw; max-height: 90vh; border-radius: 16px; }
-
-  /* ─── ANIMATIONS ─── */
-  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-  @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-  @keyframes msgIn { from { opacity: 0; transform: translateY(10px) scale(0.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
-  @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.4;} }
-  @keyframes recordPulse { 0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(232,25,44,0.4);} 50%{opacity:0.85;box-shadow:0 0 0 5px rgba(232,25,44,0);} }
-  @keyframes toastIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
-  @keyframes waveAnim { 0%,100%{transform:scaleY(0.4);} 50%{transform:scaleY(1);} }
-
-  /* ─── MOBILE ─── */
-  @media (max-width: 680px) {
-    .sidebar {
-      position: fixed; left: -280px; top: 0;
-      height: 100dvh; z-index: 200;
-      transition: left 0.3s cubic-bezier(0.23,1,0.32,1);
-    }
-    .sidebar.open { left: 0; }
-    .sidebar-overlay {
-      display: none; position: fixed; inset: 0;
-      background: rgba(0,0,0,0.5); z-index: 199;
-    }
-    .sidebar.open ~ .sidebar-overlay { display: block; }
-    .mobile-sidebar-toggle { display: flex; }
-    .chat-area { width: 100vw; }
-    .input-toolbar { flex-wrap: wrap; }
-    .tool-btn { font-size: 11px; padding: 5px 9px; }
-  }
+:root {
+  --rouge: #E8192C;
+  --jaune: #FFD600;
+  --bleu: #1A6EFF;
+  --violet: #7B2FBE;
+  --vert: #22C55E;
+  --orange: #F97316;
+  --noir: #0A0A0D;
+  --gris-fonce: #141418;
+  --gris-moyen: #1E1E26;
+  --gris-clair: #2C2C3A;
+  --gris-bord: #3A3A4E;
+  --texte: #EEEEF5;
+  --texte-doux: #8888A8;
+  --texte-muted: #555570;
+  --radius: 16px;
+  --radius-sm: 10px;
+  --shadow: 0 8px 40px rgba(0,0,0,0.6);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  font-family: 'Syne', sans-serif;
+  background: var(--noir);
+  color: var(--texte);
+  min-height: 100dvh;
+  overflow-x: hidden;
+}
+
+body::before {
+  content:'';
+  position: fixed; inset:0;
+  background:
+    radial-gradient(ellipse 55% 40% at 5% 15%, rgba(232,25,44,0.10) 0%, transparent 60%),
+    radial-gradient(ellipse 45% 50% at 95% 85%, rgba(123,47,190,0.12) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 35% at 60% 5%, rgba(26,110,255,0.07) 0%, transparent 55%);
+  pointer-events:none; z-index:0;
+}
+
+.topnav {
+  position: sticky; top:0; z-index: 100;
+  background: rgba(10,10,13,0.88);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--gris-clair);
+  padding: 0 24px;
+  display: flex; align-items: center; gap: 0;
+}
+
+.nav-brand {
+  display: flex; align-items: center; gap: 10px;
+  padding: 16px 20px 16px 0;
+  border-right: 1px solid var(--gris-clair);
+  margin-right: 8px;
+}
+
+.brand-mark {
+  width: 34px; height: 34px;
+  background: linear-gradient(135deg, var(--rouge), var(--violet));
+  border-radius: 9px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Space Mono', monospace;
+  font-size: 12px; font-weight: 700; color: white;
+}
+
+.brand-name { font-size: 16px; font-weight: 800; letter-spacing: -0.3px; }
+.brand-name span { color: var(--rouge); }
+
+.nav-tabs {
+  display: flex; gap: 2px; flex: 1;
+  padding: 8px 0;
+}
+
+.nav-tab {
+  display: flex; align-items: center; gap: 7px;
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  border: none; background: transparent;
+  color: var(--texte-doux);
+  font-family: 'Syne', sans-serif;
+  font-size: 13px; font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.nav-tab:hover { background: var(--gris-moyen); color: var(--texte); }
+.nav-tab.active {
+  background: var(--gris-moyen);
+  color: var(--texte);
+  border: 1px solid var(--gris-bord);
+}
+
+.tab-icon { font-size: 15px; }
+.tab-badge {
+  background: var(--rouge);
+  color: white; font-size: 10px; font-weight: 700;
+  border-radius: 20px; padding: 1px 6px;
+  font-family: 'Space Mono', monospace;
+}
+
+.nav-right {
+  margin-left: auto;
+  display: flex; align-items: center; gap: 10px;
+}
+
+.date-chip {
+  font-size: 11px; font-weight: 700;
+  font-family: 'Space Mono', monospace;
+  color: var(--texte-doux);
+  background: var(--gris-moyen);
+  border: 1px solid var(--gris-clair);
+  border-radius: 8px; padding: 5px 10px;
+}
+
+.main {
+  position: relative; z-index: 1;
+  max-width: 1280px; margin: 0 auto;
+  padding: 28px 24px;
+}
+
+.page { display: none; }
+.page.active { display: block; animation: fadeIn 0.25s ease; }
+
+@keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+
+.section-header {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  margin-bottom: 28px;
+  flex-wrap: wrap; gap: 16px;
+}
+
+.section-title { font-size: 26px; font-weight: 800; letter-spacing: -0.5px; }
+.section-sub { font-size: 13px; color: var(--texte-doux); margin-top: 4px; }
+
+.btn {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 10px 18px;
+  border-radius: var(--radius-sm); border: none;
+  font-family: 'Syne', sans-serif;
+  font-size: 13px; font-weight: 700;
+  cursor: pointer; transition: all 0.18s;
+  white-space: nowrap;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--rouge), var(--violet));
+  color: white;
+  box-shadow: 0 4px 16px rgba(232,25,44,0.3);
+}
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 7px 22px rgba(232,25,44,0.4); }
+
+.btn-secondary {
+  background: var(--gris-moyen);
+  border: 1px solid var(--gris-bord);
+  color: var(--texte);
+}
+.btn-secondary:hover { background: var(--gris-clair); }
+
+.btn-danger {
+  background: rgba(232,25,44,0.12);
+  border: 1px solid rgba(232,25,44,0.25);
+  color: var(--rouge);
+}
+.btn-danger:hover { background: rgba(232,25,44,0.22); }
+
+.btn-ghost {
+  background: transparent; border: 1px solid var(--gris-bord);
+  color: var(--texte-doux); padding: 7px 12px;
+  font-size: 12px;
+}
+.btn-ghost:hover { color: var(--texte); background: var(--gris-moyen); }
+
+.btn-sm { padding: 6px 12px; font-size: 12px; }
+
+.card {
+  background: var(--gris-fonce);
+  border: 1px solid var(--gris-clair);
+  border-radius: var(--radius);
+  padding: 24px;
+}
+
+.modal-overlay {
+  display: none; position: fixed; inset:0;
+  background: rgba(0,0,0,0.75);
+  z-index: 999; align-items: center; justify-content: center;
+  backdrop-filter: blur(6px);
+}
+.modal-overlay.open { display: flex; }
+
+.modal {
+  background: var(--gris-fonce);
+  border: 1px solid var(--gris-bord);
+  border-radius: 20px;
+  padding: 32px;
+  width: min(500px, 92vw);
+  box-shadow: var(--shadow);
+  animation: modalIn 0.28s cubic-bezier(0.23,1,0.32,1);
+  max-height: 90dvh; overflow-y: auto;
+}
+
+@keyframes modalIn { from { opacity:0; transform:scale(0.93) translateY(20px); } to { opacity:1; transform:scale(1) translateY(0); } }
+
+.modal-title { font-size: 20px; font-weight: 800; margin-bottom: 24px; letter-spacing: -0.3px; }
+
+.form-group { margin-bottom: 18px; }
+.form-label {
+  display: block;
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--texte-doux); margin-bottom: 8px;
+}
+
+.form-input, .form-select, .form-textarea {
+  width: 100%;
+  background: var(--gris-moyen);
+  border: 1.5px solid var(--gris-clair);
+  border-radius: var(--radius-sm);
+  padding: 11px 14px;
+  color: var(--texte);
+  font-family: 'Syne', sans-serif;
+  font-size: 14px; font-weight: 500;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-input:focus, .form-select:focus, .form-textarea:focus {
+  border-color: var(--bleu);
+  box-shadow: 0 0 0 3px rgba(26,110,255,0.14);
+}
+
+.form-select { appearance: none; cursor: pointer; }
+.form-textarea { resize: vertical; min-height: 80px; line-height: 1.5; }
+
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+.modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 8px; }
+
+/* ── CALENDRIER ── */
+.calendar-layout {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 24px;
+}
+
+.mini-cal { margin-bottom: 24px; }
+.mini-cal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+.mini-cal-title { font-size: 15px; font-weight: 800; }
+.mini-cal-nav { display: flex; gap: 4px; }
+
+.cal-nav-btn {
+  width: 28px; height: 28px;
+  background: var(--gris-moyen);
+  border: 1px solid var(--gris-clair);
+  border-radius: 7px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; color: var(--texte);
+  font-size: 13px;
+  transition: background 0.15s;
+}
+.cal-nav-btn:hover { background: var(--gris-clair); }
+
+.mini-cal-grid { display: grid; grid-template-columns: repeat(7,1fr); gap: 3px; }
+
+.cal-day-name {
+  text-align: center;
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 1px; text-transform: uppercase;
+  color: var(--texte-muted); padding: 4px 0;
+}
+
+.cal-day {
+  aspect-ratio: 1;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 8px;
+  font-size: 12px; font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  position: relative;
+}
+
+.cal-day:hover { background: var(--gris-clair); }
+.cal-day.other-month { color: var(--texte-muted); }
+.cal-day.today { background: var(--gris-clair); color: var(--jaune); font-weight: 800; }
+.cal-day.selected { background: linear-gradient(135deg, var(--rouge), var(--violet)); color: white; }
+.cal-day.has-event::after {
+  content:'';
+  position: absolute; bottom: 3px;
+  width: 4px; height: 4px;
+  background: var(--bleu);
+  border-radius: 50%;
+}
+
+.meetings-list { display: flex; flex-direction: column; gap: 12px; }
+
+.meeting-card {
+  background: var(--gris-moyen);
+  border: 1px solid var(--gris-clair);
+  border-radius: var(--radius-sm);
+  padding: 16px;
+  display: flex; gap: 14px;
+  transition: border-color 0.2s, transform 0.15s;
+  animation: fadeIn 0.3s ease;
+}
+
+.meeting-card:hover { border-color: var(--gris-bord); transform: translateY(-1px); }
+
+.meeting-date-block {
+  flex-shrink: 0;
+  width: 52px; height: 52px;
+  border-radius: 12px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  font-family: 'Space Mono', monospace;
+}
+
+.meeting-day { font-size: 20px; font-weight: 700; line-height: 1; }
+.meeting-month { font-size: 10px; font-weight: 400; text-transform: uppercase; letter-spacing: 1px; opacity: 0.85; }
+.meeting-info { flex: 1; min-width: 0; }
+.meeting-theme {
+  font-size: 14px; font-weight: 700; margin-bottom: 4px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.meeting-meta { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
+
+.meta-chip {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 11px; font-weight: 600; color: var(--texte-doux);
+}
+
+.meeting-resp {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--gris-clair);
+  border-radius: 6px; padding: 3px 8px;
+  font-size: 11px; font-weight: 700;
+}
+
+.resp-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--vert); }
+.meeting-actions { display: flex; gap: 6px; align-items: flex-start; flex-shrink: 0; }
+
+.cal-sidebar .card { padding: 20px; }
+.cal-sidebar-title { font-size: 13px; font-weight: 800; margin-bottom: 14px; letter-spacing: 0.5px; text-transform: uppercase; color: var(--texte-doux); }
+
+.upcoming-item { display: flex; gap: 10px; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
+.upcoming-dot-line { display: flex; flex-direction: column; align-items: center; padding-top: 4px; }
+.u-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.u-line { width: 2px; flex: 1; background: var(--gris-clair); margin-top: 4px; }
+.upcoming-item:last-child .u-line { display: none; }
+.upcoming-info { flex: 1; }
+.upcoming-theme { font-size: 13px; font-weight: 700; margin-bottom: 3px; }
+.upcoming-time { font-size: 11px; color: var(--texte-doux); font-family: 'Space Mono', monospace; }
+
+.color-rouge { background: linear-gradient(135deg,#E8192C22,#E8192C44); border-left: 3px solid var(--rouge); }
+.color-bleu { background: linear-gradient(135deg,#1A6EFF22,#1A6EFF44); border-left: 3px solid var(--bleu); }
+.color-violet { background: linear-gradient(135deg,#7B2FBE22,#7B2FBE44); border-left: 3px solid var(--violet); }
+.color-jaune { background: linear-gradient(135deg,#FFD60022,#FFD60044); border-left: 3px solid var(--jaune); }
+.color-vert { background: linear-gradient(135deg,#22C55E22,#22C55E44); border-left: 3px solid var(--vert); }
+.color-orange { background: linear-gradient(135deg,#F9731622,#F9731644); border-left: 3px solid var(--orange); }
+
+.date-block-rouge { background: linear-gradient(135deg,var(--rouge),#FF6B35); color: white; }
+.date-block-bleu { background: linear-gradient(135deg,var(--bleu),#00C3FF); color: white; }
+.date-block-violet { background: linear-gradient(135deg,var(--violet),#E040FB); color: white; }
+.date-block-jaune { background: linear-gradient(135deg,var(--jaune),#FF8F00); color: #0A0A0D; }
+.date-block-vert { background: linear-gradient(135deg,var(--vert),#16A34A); color: white; }
+.date-block-orange { background: linear-gradient(135deg,var(--orange),#FBBF24); color: white; }
+
+/* ── TÂCHES ── */
+.tasks-header-bar { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
+.filter-tabs { display: flex; gap: 4px; }
+.filter-tab {
+  padding: 6px 14px;
+  border-radius: 8px; border: 1px solid var(--gris-clair);
+  background: transparent;
+  color: var(--texte-doux);
+  font-family: 'Syne', sans-serif;
+  font-size: 12px; font-weight: 700;
+  cursor: pointer; transition: all 0.15s;
+}
+.filter-tab.active { background: var(--gris-moyen); color: var(--texte); border-color: var(--gris-bord); }
+.filter-tab:hover:not(.active) { background: var(--gris-moyen); }
+
+.tasks-columns { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+
+.task-col-header { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
+.col-badge { width: 8px; height: 8px; border-radius: 50%; }
+.col-title { font-size: 12px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; color: var(--texte-doux); }
+.col-count { margin-left: auto; font-size: 11px; font-weight: 700; font-family: 'Space Mono', monospace; color: var(--texte-muted); }
+
+.task-list { display: flex; flex-direction: column; gap: 10px; }
+
+.task-item {
+  background: var(--gris-fonce);
+  border: 1px solid var(--gris-clair);
+  border-radius: var(--radius-sm);
+  padding: 14px;
+  transition: border-color 0.2s, transform 0.15s;
+  animation: fadeIn 0.3s ease;
+}
+.task-item:hover { border-color: var(--gris-bord); transform: translateY(-1px); }
+.task-item.done { opacity: 0.5; }
+
+.task-top { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 10px; }
+.task-check {
+  width: 18px; height: 18px;
+  border-radius: 5px; border: 2px solid var(--gris-bord);
+  flex-shrink: 0; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.15s; margin-top: 1px;
+}
+.task-check.checked { background: var(--vert); border-color: var(--vert); }
+.task-check.checked::after { content:'✓'; color: white; font-size: 11px; font-weight: 700; }
+
+.task-name { font-size: 13px; font-weight: 700; flex: 1; line-height: 1.4; }
+.task-name.done-text { text-decoration: line-through; color: var(--texte-doux); }
+
+.task-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.task-assignee { display: flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 600; color: var(--texte-doux); }
+.assignee-av { width: 20px; height: 20px; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 800; color: white; font-family: 'Space Mono', monospace; }
+.task-cat { font-size: 10px; font-weight: 700; border-radius: 5px; padding: 2px 7px; }
+.task-due { font-size: 10px; font-weight: 600; font-family: 'Space Mono', monospace; color: var(--texte-muted); margin-left: auto; }
+.task-del-btn { background: none; border: none; color: var(--texte-muted); font-size: 14px; cursor: pointer; padding: 2px; line-height: 1; transition: color 0.15s; flex-shrink: 0; }
+.task-del-btn:hover { color: var(--rouge); }
+
+.cat-affiche { background: rgba(232,25,44,0.15); color: var(--rouge); }
+.cat-video { background: rgba(123,47,190,0.15); color: #C084FC; }
+.cat-publication { background: rgba(26,110,255,0.15); color: #60A5FA; }
+.cat-redaction { background: rgba(255,214,0,0.15); color: var(--jaune); }
+.cat-general { background: rgba(34,197,94,0.15); color: var(--vert); }
+
+.add-task-btn {
+  width: 100%; padding: 10px;
+  background: rgba(255,255,255,0.03);
+  border: 1.5px dashed var(--gris-clair);
+  border-radius: var(--radius-sm);
+  color: var(--texte-muted);
+  font-family: 'Syne', sans-serif;
+  font-size: 12px; font-weight: 700;
+  cursor: pointer; transition: all 0.15s;
+  margin-top: 10px; text-align: center;
+}
+.add-task-btn:hover { border-color: var(--bleu); color: var(--bleu); background: rgba(26,110,255,0.05); }
+
+/* ── SONDAGES ── */
+.polls-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 20px; }
+
+.poll-card {
+  background: var(--gris-fonce);
+  border: 1px solid var(--gris-clair);
+  border-radius: var(--radius);
+  padding: 22px;
+  transition: border-color 0.2s, transform 0.15s;
+  animation: fadeIn 0.3s ease;
+}
+.poll-card:hover { border-color: var(--gris-bord); transform: translateY(-2px); }
+
+.poll-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; margin-bottom: 16px; }
+.poll-question { font-size: 15px; font-weight: 700; line-height: 1.4; }
+.poll-status-chip { font-size: 10px; font-weight: 700; letter-spacing: 0.5px; padding: 3px 8px; border-radius: 20px; white-space: nowrap; flex-shrink: 0; }
+.poll-open { background: rgba(34,197,94,0.15); color: var(--vert); }
+.poll-closed { background: rgba(136,136,168,0.15); color: var(--texte-doux); }
+.poll-options { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+
+.poll-option {
+  position: relative; overflow: hidden;
+  border-radius: 8px;
+  border: 1.5px solid var(--gris-clair);
+  cursor: pointer; transition: border-color 0.2s;
+}
+.poll-option:hover:not(.voted) { border-color: var(--bleu); }
+.poll-option.voted { border-color: var(--bleu); }
+.poll-option.winner { border-color: var(--jaune); }
+
+.poll-option-bar { position: absolute; left:0; top:0; bottom:0; border-radius: 6px; transition: width 0.6s cubic-bezier(0.23,1,0.32,1); }
+.poll-option-content { position: relative; z-index: 1; display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; }
+.poll-option-label { font-size: 13px; font-weight: 600; }
+.poll-option-pct { font-size: 12px; font-weight: 700; font-family: 'Space Mono', monospace; }
+.poll-option-votes { font-size: 10px; color: var(--texte-doux); }
+
+.poll-footer { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.poll-votes-total { font-size: 11px; color: var(--texte-doux); flex:1; }
+.poll-del-btn { background: none; border: none; color: var(--texte-muted); font-size: 13px; cursor: pointer; transition: color 0.15s; }
+.poll-del-btn:hover { color: var(--rouge); }
+
+/* ═══════════════════════════════
+   DISCUSSION MODULE
+═══════════════════════════════ */
+
+/* Login screen */
+.chat-login {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  gap: 0;
+}
+
+.chat-login-card {
+  background: var(--gris-fonce);
+  border: 1px solid var(--gris-clair);
+  border-radius: 24px;
+  padding: 48px 40px;
+  width: min(420px, 90vw);
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+}
+
+.chat-login-icon {
+  width: 72px; height: 72px;
+  background: linear-gradient(135deg, var(--bleu), var(--violet));
+  border-radius: 20px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 32px;
+  margin: 0 auto 20px;
+}
+
+.chat-login-title {
+  font-size: 22px; font-weight: 800; margin-bottom: 6px; letter-spacing: -0.3px;
+}
+
+.chat-login-sub {
+  font-size: 13px; color: var(--texte-doux); margin-bottom: 32px; line-height: 1.5;
+}
+
+.chat-login-input {
+  width: 100%;
+  background: var(--gris-moyen);
+  border: 2px solid var(--gris-clair);
+  border-radius: 12px;
+  padding: 14px 18px;
+  color: var(--texte);
+  font-family: 'Syne', sans-serif;
+  font-size: 16px; font-weight: 600;
+  outline: none;
+  text-align: center;
+  margin-bottom: 16px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.chat-login-input:focus {
+  border-color: var(--bleu);
+  box-shadow: 0 0 0 4px rgba(26,110,255,0.15);
+}
+
+.chat-login-input::placeholder { color: var(--texte-muted); font-weight: 400; }
+
+.chat-login-btn {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, var(--bleu), var(--violet));
+  border: none; border-radius: 12px;
+  color: white; font-family: 'Syne', sans-serif;
+  font-size: 15px; font-weight: 800;
+  cursor: pointer; transition: all 0.2s;
+  box-shadow: 0 4px 20px rgba(26,110,255,0.35);
+}
+.chat-login-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(26,110,255,0.45); }
+
+/* Chat layout */
+.chat-layout {
+  display: none;
+  grid-template-columns: 1fr 260px;
+  gap: 20px;
+  height: calc(100dvh - 140px);
+  min-height: 500px;
+}
+
+.chat-layout.visible { display: grid; }
+
+/* Main chat area */
+.chat-main {
+  background: var(--gris-fonce);
+  border: 1px solid var(--gris-clair);
+  border-radius: var(--radius);
+  display: flex; flex-direction: column;
+  overflow: hidden;
+}
+
+.chat-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--gris-clair);
+  display: flex; align-items: center; gap: 12px;
+  flex-shrink: 0;
+}
+
+.chat-header-icon {
+  width: 36px; height: 36px;
+  background: linear-gradient(135deg, var(--bleu), var(--violet));
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; flex-shrink: 0;
+}
+
+.chat-header-info { flex: 1; }
+.chat-header-name { font-size: 14px; font-weight: 800; }
+.chat-header-status { font-size: 11px; color: var(--texte-doux); }
+
+.chat-online-count {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 11px; font-weight: 700;
+  color: var(--vert);
+  background: rgba(34,197,94,0.1);
+  border: 1px solid rgba(34,197,94,0.2);
+  border-radius: 20px; padding: 4px 10px;
+}
+
+.online-pulse {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--vert);
+  animation: pulse-green 2s infinite;
+}
+
+@keyframes pulse-green {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.8); }
+}
+
+.chat-logout-btn {
+  background: rgba(232,25,44,0.1);
+  border: 1px solid rgba(232,25,44,0.2);
+  border-radius: 8px; padding: 6px 12px;
+  color: var(--rouge); font-family: 'Syne', sans-serif;
+  font-size: 12px; font-weight: 700; cursor: pointer;
+  transition: all 0.15s; flex-shrink: 0;
+}
+.chat-logout-btn:hover { background: rgba(232,25,44,0.2); }
+
+/* Messages area */
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  display: flex; flex-direction: column; gap: 4px;
+  scroll-behavior: smooth;
+}
+
+.chat-messages::-webkit-scrollbar { width: 4px; }
+.chat-messages::-webkit-scrollbar-track { background: transparent; }
+.chat-messages::-webkit-scrollbar-thumb { background: var(--gris-clair); border-radius: 2px; }
+
+/* Message groups */
+.msg-group { margin-bottom: 12px; }
+
+.msg-row {
+  display: flex; gap: 10px; align-items: flex-end;
+}
+
+.msg-row.own { flex-direction: row-reverse; }
+
+.msg-avatar {
+  width: 32px; height: 32px; border-radius: 9px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 800; color: white;
+  font-family: 'Space Mono', monospace;
+  flex-shrink: 0; margin-bottom: 2px;
+}
+
+.msg-content { max-width: 70%; }
+
+.msg-sender {
+  font-size: 11px; font-weight: 700;
+  color: var(--texte-doux); margin-bottom: 4px;
+  padding: 0 4px;
+}
+.msg-row.own .msg-sender { text-align: right; }
+
+.msg-bubble {
+  padding: 10px 14px;
+  border-radius: 16px;
+  font-size: 14px; font-weight: 500; line-height: 1.5;
+  word-break: break-word;
+}
+
+.msg-bubble.other {
+  background: var(--gris-moyen);
+  border: 1px solid var(--gris-clair);
+  border-bottom-left-radius: 4px;
+  color: var(--texte);
+}
+
+.msg-bubble.own {
+  background: linear-gradient(135deg, var(--bleu), var(--violet));
+  border-bottom-right-radius: 4px;
+  color: white;
+}
+
+.msg-time {
+  font-size: 10px; font-weight: 600;
+  color: var(--texte-muted);
+  padding: 3px 4px 0;
+  font-family: 'Space Mono', monospace;
+}
+.msg-row.own .msg-time { text-align: right; }
+
+/* System messages */
+.msg-system {
+  text-align: center;
+  font-size: 11px; font-weight: 700;
+  color: var(--texte-muted);
+  padding: 8px 16px;
+  background: rgba(255,255,255,0.03);
+  border-radius: 20px;
+  margin: 8px auto;
+  width: fit-content;
+}
+
+/* Chat input */
+.chat-input-area {
+  padding: 16px 20px;
+  border-top: 1px solid var(--gris-clair);
+  display: flex; gap: 10px; align-items: flex-end;
+  flex-shrink: 0;
+}
+
+.chat-textarea {
+  flex: 1;
+  background: var(--gris-moyen);
+  border: 1.5px solid var(--gris-clair);
+  border-radius: 12px;
+  padding: 11px 14px;
+  color: var(--texte);
+  font-family: 'Syne', sans-serif;
+  font-size: 14px; font-weight: 500;
+  outline: none; resize: none;
+  line-height: 1.5;
+  min-height: 44px; max-height: 120px;
+  transition: border-color 0.2s;
+}
+
+.chat-textarea:focus { border-color: var(--bleu); box-shadow: 0 0 0 3px rgba(26,110,255,0.12); }
+.chat-textarea::placeholder { color: var(--texte-muted); }
+
+.chat-send-btn {
+  width: 44px; height: 44px;
+  background: linear-gradient(135deg, var(--bleu), var(--violet));
+  border: none; border-radius: 12px;
+  color: white; font-size: 18px;
+  cursor: pointer; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.18s;
+  box-shadow: 0 4px 14px rgba(26,110,255,0.3);
+}
+.chat-send-btn:hover { transform: translateY(-2px) scale(1.05); box-shadow: 0 7px 20px rgba(26,110,255,0.4); }
+.chat-send-btn:active { transform: scale(0.95); }
+
+/* Right sidebar - online users */
+.chat-sidebar {
+  display: flex; flex-direction: column; gap: 16px;
+}
+
+.online-panel {
+  background: var(--gris-fonce);
+  border: 1px solid var(--gris-clair);
+  border-radius: var(--radius);
+  padding: 20px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.online-panel-title {
+  font-size: 11px; font-weight: 800;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--texte-doux); margin-bottom: 16px;
+  display: flex; align-items: center; gap: 8px;
+}
+
+.online-users-list { display: flex; flex-direction: column; gap: 8px; }
+
+.online-user-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 10px;
+  background: var(--gris-moyen);
+  border-radius: 10px;
+  border: 1px solid var(--gris-clair);
+  animation: fadeIn 0.3s ease;
+}
+
+.online-user-av {
+  width: 34px; height: 34px;
+  border-radius: 9px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 800; color: white;
+  font-family: 'Space Mono', monospace;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.online-user-av::after {
+  content:'';
+  position: absolute; bottom: -2px; right: -2px;
+  width: 10px; height: 10px;
+  background: var(--vert);
+  border: 2px solid var(--gris-fonce);
+  border-radius: 50%;
+}
+
+.online-user-name { font-size: 13px; font-weight: 700; flex: 1; }
+.online-user-you { font-size: 10px; font-weight: 700; color: var(--bleu); }
+
+.chat-info-panel {
+  background: var(--gris-fonce);
+  border: 1px solid var(--gris-clair);
+  border-radius: var(--radius);
+  padding: 20px;
+}
+
+.sync-indicator {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 11px; font-weight: 700; color: var(--vert);
+  margin-bottom: 12px;
+}
+
+.sync-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--vert);
+  animation: pulse-green 2s infinite;
+}
+
+/* Typing indicator */
+.typing-indicator {
+  display: none;
+  padding: 0 20px 8px;
+  font-size: 11px; color: var(--texte-muted);
+  font-style: italic;
+}
+
+/* Empty chat */
+.chat-empty {
+  flex: 1; display: flex;
+  flex-direction: column; align-items: center; justify-content: center;
+  gap: 12px; color: var(--texte-muted);
+  text-align: center;
+}
+
+.chat-empty-icon { font-size: 48px; opacity: 0.3; }
+.chat-empty-text { font-size: 13px; font-weight: 600; }
+
+/* ── MISC ── */
+.empty-state { text-align: center; padding: 60px 20px; color: var(--texte-muted); }
+.empty-icon { font-size: 48px; margin-bottom: 16px; opacity: 0.5; }
+.empty-title { font-size: 16px; font-weight: 700; margin-bottom: 8px; color: var(--texte-doux); }
+.empty-sub { font-size: 13px; line-height: 1.6; }
+
+#toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; pointer-events: none; }
+
+.toast {
+  background: var(--gris-fonce);
+  border: 1px solid var(--gris-bord);
+  border-radius: 12px; padding: 12px 18px;
+  font-size: 13px; font-weight: 600; color: var(--texte);
+  box-shadow: var(--shadow);
+  display: flex; align-items: center; gap: 8px;
+  animation: toastIn 0.3s cubic-bezier(0.23,1,0.32,1);
+  max-width: 320px;
+}
+
+@keyframes toastIn { from { opacity:0; transform:translateX(20px); } to { opacity:1; transform:translateX(0); } }
+.toast-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+.confirm-modal { max-width: 380px; }
+.confirm-icon { font-size: 40px; text-align: center; margin-bottom: 12px; }
+.confirm-title { font-size: 17px; font-weight: 800; text-align: center; margin-bottom: 8px; }
+.confirm-text { font-size: 13px; color: var(--texte-doux); text-align: center; margin-bottom: 24px; line-height: 1.6; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 960px) {
+  .calendar-layout { grid-template-columns: 1fr; }
+  .tasks-columns { grid-template-columns: 1fr 1fr; }
+  .chat-layout { grid-template-columns: 1fr; height: auto; }
+  .chat-sidebar { display: none; }
+  .chat-main { height: calc(100dvh - 180px); min-height: 400px; }
+}
+
+@media (max-width: 680px) {
+  .tasks-columns { grid-template-columns: 1fr; }
+  .form-row { grid-template-columns: 1fr; }
+  .topnav { flex-wrap: wrap; padding: 10px 16px; }
+  .nav-tabs { overflow-x: auto; flex-wrap: nowrap; }
+  .main { padding: 20px 16px; }
+  .section-title { font-size: 20px; }
+}
 </style>
 </head>
 <body>
 
-<!-- ═══ LOGIN ═══ -->
-<div id="login-screen">
-  <div class="login-card">
-    <div class="login-logo">
-      <div class="logo-mark">TC</div>
-      <div class="logo-text">Team<span>Chat</span></div>
+<!-- ── TOPNAV ── -->
+<nav class="topnav">
+  <div class="nav-brand">
+    <div class="brand-mark">RC</div>
+    <div class="brand-name">Rev<span>Com</span></div>
+  </div>
+
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="showPage('calendrier', this)">
+      <span class="tab-icon">📅</span> Calendrier
+    </button>
+    <button class="nav-tab" onclick="showPage('taches', this)">
+      <span class="tab-icon">✅</span> Tâches
+      <span class="tab-badge" id="tasks-badge" style="display:none"></span>
+    </button>
+    <button class="nav-tab" onclick="showPage('sondages', this)">
+      <span class="tab-icon">📊</span> Sondages
+    </button>
+    <button class="nav-tab" onclick="showPage('discussion', this)">
+      <span class="tab-icon">💬</span> Discussion
+      <span class="tab-badge" id="chat-badge" style="display:none"></span>
+    </button>
+  </div>
+
+  <div class="nav-right">
+    <div class="date-chip" id="current-date"></div>
+  </div>
+</nav>
+
+<!-- ── MAIN ── -->
+<div class="main">
+
+  <!-- ══ PAGE CALENDRIER ══ -->
+  <div class="page active" id="page-calendrier">
+    <div class="section-header">
+      <div>
+        <div class="section-title">📅 Calendrier des réunions</div>
+        <div class="section-sub">Planifiez, organisez et suivez toutes vos réunions d'équipe.</div>
+      </div>
+      <button class="btn btn-primary" onclick="openMeetingModal()">＋ Nouvelle réunion</button>
     </div>
-    <div class="login-title">Rejoindre la<br>réunion d'équipe</div>
-    <div class="login-sub">Entrez votre nom pour accéder à l'espace de discussion en temps réel.</div>
-    <div class="field-label">Votre nom</div>
-    <input type="text" id="username-input" class="login-input" placeholder="Ex: Marie Dupont" maxlength="32" autocomplete="off">
-    <button class="btn-join" onclick="joinRoom()">Rejoindre la réunion →</button>
+
+    <div class="calendar-layout">
+      <div>
+        <div class="card" style="margin-bottom:20px;">
+          <div class="mini-cal">
+            <div class="mini-cal-header">
+              <div class="mini-cal-title" id="mini-cal-title">Mai 2026</div>
+              <div class="mini-cal-nav">
+                <button class="cal-nav-btn" onclick="changeMonth(-1)">‹</button>
+                <button class="cal-nav-btn" onclick="changeMonth(1)">›</button>
+              </div>
+            </div>
+            <div class="mini-cal-grid" id="mini-cal-grid"></div>
+          </div>
+        </div>
+
+        <div>
+          <div style="font-size:11px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--texte-doux);margin-bottom:14px;">Réunions programmées</div>
+          <div class="meetings-list" id="meetings-list">
+            <div class="empty-state"><div class="empty-icon">📅</div><div class="empty-title">Aucune réunion programmée</div><div class="empty-sub">Cliquez sur "Nouvelle réunion" pour commencer.</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="cal-sidebar">
+        <div class="card">
+          <div class="cal-sidebar-title">Prochains événements</div>
+          <div id="upcoming-list"><div style="color:var(--texte-muted);font-size:12px;text-align:center;padding:20px 0;">Aucun événement à venir</div></div>
+        </div>
+        <div class="card" style="margin-top:16px;">
+          <div class="cal-sidebar-title">Légende</div>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <div style="display:flex;align-items:center;gap:8px;font-size:12px;font-weight:600;"><div style="width:12px;height:12px;border-radius:3px;background:var(--rouge);"></div>Équipe créative</div>
+            <div style="display:flex;align-items:center;gap:8px;font-size:12px;font-weight:600;"><div style="width:12px;height:12px;border-radius:3px;background:var(--bleu);"></div>Stratégie</div>
+            <div style="display:flex;align-items:center;gap:8px;font-size:12px;font-weight:600;"><div style="width:12px;height:12px;border-radius:3px;background:var(--violet);"></div>Direction</div>
+            <div style="display:flex;align-items:center;gap:8px;font-size:12px;font-weight:600;"><div style="width:12px;height:12px;border-radius:3px;background:var(--jaune);"></div>Production</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ PAGE TÂCHES ══ -->
+  <div class="page" id="page-taches">
+    <div class="section-header">
+      <div>
+        <div class="section-title">✅ Liste des tâches</div>
+        <div class="section-sub">Répartissez les responsabilités : affiches, vidéos, publications et plus.</div>
+      </div>
+      <button class="btn btn-primary" onclick="openTaskModal()">＋ Nouvelle tâche</button>
+    </div>
+
+    <div class="tasks-header-bar">
+      <div class="filter-tabs">
+        <button class="filter-tab active" onclick="filterTasks('all', this)">Toutes</button>
+        <button class="filter-tab" onclick="filterTasks('todo', this)">À faire</button>
+        <button class="filter-tab" onclick="filterTasks('inprogress', this)">En cours</button>
+        <button class="filter-tab" onclick="filterTasks('done', this)">Terminées</button>
+      </div>
+    </div>
+
+    <div class="tasks-columns">
+      <div class="task-col">
+        <div class="task-col-header"><div class="col-badge" style="background:var(--rouge)"></div><div class="col-title">À faire</div><div class="col-count" id="count-todo">0</div></div>
+        <div class="task-list" id="col-todo"></div>
+        <button class="add-task-btn" onclick="openTaskModal('todo')">＋ Ajouter une tâche</button>
+      </div>
+      <div class="task-col">
+        <div class="task-col-header"><div class="col-badge" style="background:var(--jaune)"></div><div class="col-title">En cours</div><div class="col-count" id="count-inprogress">0</div></div>
+        <div class="task-list" id="col-inprogress"></div>
+        <button class="add-task-btn" onclick="openTaskModal('inprogress')">＋ Ajouter une tâche</button>
+      </div>
+      <div class="task-col">
+        <div class="task-col-header"><div class="col-badge" style="background:var(--vert)"></div><div class="col-title">Terminées</div><div class="col-count" id="count-done">0</div></div>
+        <div class="task-list" id="col-done"></div>
+        <button class="add-task-btn" onclick="openTaskModal('done')">＋ Ajouter une tâche</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ PAGE SONDAGES ══ -->
+  <div class="page" id="page-sondages">
+    <div class="section-header">
+      <div>
+        <div class="section-title">📊 Sondages d'équipe</div>
+        <div class="section-sub">Votez sur des idées, prenez des décisions collectives en temps réel.</div>
+      </div>
+      <button class="btn btn-primary" onclick="openPollModal()">＋ Créer un sondage</button>
+    </div>
+    <div class="polls-grid" id="polls-grid">
+      <div class="empty-state" style="grid-column:1/-1;">
+        <div class="empty-icon">📊</div>
+        <div class="empty-title">Aucun sondage actif</div>
+        <div class="empty-sub">Créez un sondage pour recueillir l'avis de votre équipe.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ PAGE DISCUSSION ══ -->
+  <div class="page" id="page-discussion">
+    <div class="section-header" style="margin-bottom:20px;">
+      <div>
+        <div class="section-title">💬 Discussion d'équipe</div>
+        <div class="section-sub">Espace de discussion commun — synchronisé en temps réel pour toute l'équipe.</div>
+      </div>
+    </div>
+
+    <!-- LOGIN SCREEN -->
+    <div class="chat-login" id="chat-login">
+      <div class="chat-login-card">
+        <div class="chat-login-icon">💬</div>
+        <div class="chat-login-title">Rejoindre la discussion</div>
+        <div class="chat-login-sub">Entrez votre nom pour rejoindre le groupe de discussion commun à toute l'équipe.</div>
+        <input
+          type="text"
+          class="chat-login-input"
+          id="login-name-input"
+          placeholder="Votre prénom ou nom..."
+          maxlength="30"
+          autocomplete="off"
+        >
+        <button class="chat-login-btn" onclick="chatLogin()">Rejoindre le groupe 🚀</button>
+      </div>
+    </div>
+
+    <!-- CHAT INTERFACE -->
+    <div class="chat-layout" id="chat-layout">
+
+      <!-- Main chat -->
+      <div class="chat-main">
+        <div class="chat-header">
+          <div class="chat-header-icon">💬</div>
+          <div class="chat-header-info">
+            <div class="chat-header-name">Groupe RevCom</div>
+            <div class="chat-header-status" id="chat-header-status">Discussion générale de l'équipe</div>
+          </div>
+          <div class="chat-online-count">
+            <div class="online-pulse"></div>
+            <span id="online-count-badge">0 en ligne</span>
+          </div>
+          <button class="chat-logout-btn" onclick="chatLogout()">Quitter</button>
+        </div>
+
+        <div class="chat-messages" id="chat-messages">
+          <div class="chat-empty" id="chat-empty">
+            <div class="chat-empty-icon">💬</div>
+            <div class="chat-empty-text">Aucun message encore.<br>Soyez le premier à écrire !</div>
+          </div>
+        </div>
+
+        <div class="typing-indicator" id="typing-indicator"></div>
+
+        <div class="chat-input-area">
+          <textarea
+            class="chat-textarea"
+            id="chat-input"
+            placeholder="Écrire un message..."
+            rows="1"
+            onkeydown="handleChatKey(event)"
+            oninput="autoResize(this)"
+          ></textarea>
+          <button class="chat-send-btn" onclick="sendMessage()" title="Envoyer">➤</button>
+        </div>
+      </div>
+
+      <!-- Sidebar -->
+      <div class="chat-sidebar">
+        <div class="online-panel">
+          <div class="online-panel-title">
+            <div class="online-pulse"></div>
+            Membres en ligne
+          </div>
+          <div class="online-users-list" id="online-users-list">
+            <div style="color:var(--texte-muted);font-size:12px;text-align:center;padding:16px 0;">Aucun membre en ligne</div>
+          </div>
+        </div>
+
+        <div class="chat-info-panel">
+          <div class="sync-indicator">
+            <div class="sync-dot"></div>
+            Synchronisation active
+          </div>
+          <div style="font-size:12px;color:var(--texte-doux);line-height:1.6;">
+            Les messages sont partagés en temps réel avec tous les membres connectés.
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
-<!-- ═══ APP ═══ -->
-<div id="app">
-  <!-- Sidebar -->
-  <aside class="sidebar" id="sidebar">
-    <div class="sidebar-header">
-      <div class="app-logo">
-        <div class="logo-mark">TC</div>
-        <div class="logo-text">Team<span>Chat</span></div>
+<!-- ══ MODALS ══ -->
+
+<!-- Nouvelle réunion -->
+<div class="modal-overlay" id="modal-meeting">
+  <div class="modal">
+    <div class="modal-title">📅 <span id="meeting-modal-title">Nouvelle réunion</span></div>
+    <div class="form-group">
+      <label class="form-label">Thème / Titre</label>
+      <input type="text" class="form-input" id="m-theme" placeholder="Ex: Point hebdomadaire équipe com…">
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Date</label>
+        <input type="date" class="form-input" id="m-date">
       </div>
-      <div class="room-info">
-        <div class="room-dot"></div>
-        <span class="room-name">Réunion principale</span>
-        <span class="room-count" id="member-count">0 membres</span>
+      <div class="form-group">
+        <label class="form-label">Heure</label>
+        <input type="time" class="form-input" id="m-time">
       </div>
     </div>
-
-    <div class="members-section">
-      <div class="members-title">Membres connectés</div>
-      <div id="members-list"></div>
+    <div class="form-group">
+      <label class="form-label">Responsable</label>
+      <input type="text" class="form-input" id="m-resp" placeholder="Nom du responsable…">
     </div>
-
-    <div class="sidebar-footer">
-      <div class="current-user">
-        <div class="member-avatar" id="my-avatar"></div>
-        <div>
-          <div class="current-user-name" id="my-name-display"></div>
-          <div class="current-user-role">En ligne</div>
-        </div>
-      </div>
-      <button class="btn-logout" onclick="leaveRoom()">
-        <span>⬡</span> Quitter la réunion
-      </button>
+    <div class="form-group">
+      <label class="form-label">Catégorie / Couleur</label>
+      <select class="form-select" id="m-color">
+        <option value="rouge">🔴 Équipe créative</option>
+        <option value="bleu">🔵 Stratégie</option>
+        <option value="violet">🟣 Direction</option>
+        <option value="jaune">🟡 Production</option>
+        <option value="vert">🟢 Opérationnel</option>
+        <option value="orange">🟠 Urgent</option>
+      </select>
     </div>
-  </aside>
-
-  <div class="sidebar-overlay" onclick="closeSidebar()"></div>
-
-  <!-- Chat -->
-  <main class="chat-area">
-    <div class="chat-header">
-      <div class="chat-header-icon">💬</div>
-      <div>
-        <div class="chat-header-title">Discussion générale</div>
-        <div class="chat-header-sub" id="header-status">Chargement…</div>
-      </div>
-      <div class="chat-header-actions">
-        <button class="header-btn" title="Participants" onclick="toggleSidebar()">👥</button>
-      </div>
+    <div class="form-group">
+      <label class="form-label">Notes (optionnel)</label>
+      <textarea class="form-textarea" id="m-notes" placeholder="Ordre du jour, informations importantes…"></textarea>
     </div>
-
-    <div id="messages"></div>
-
-    <div class="input-area">
-      <div class="input-toolbar">
-        <button class="tool-btn" onclick="document.getElementById('image-input').click()">🖼️ Image</button>
-        <button class="tool-btn" id="voice-btn" onclick="toggleVoice()">🎙️ Note vocale</button>
-      </div>
-      <div class="input-row">
-        <textarea id="msg-input" rows="1" placeholder="Écrivez votre message…"></textarea>
-        <button class="send-btn" onclick="sendMessage()">➤</button>
-      </div>
-      <input type="file" id="image-input" accept="image/*" onchange="sendImage(event)">
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeMeetingModal()">Annuler</button>
+      <button class="btn btn-primary" onclick="saveMeeting()">💾 Enregistrer</button>
     </div>
-  </main>
-
-  <button class="mobile-sidebar-toggle" onclick="toggleSidebar()">👥</button>
+  </div>
 </div>
 
-<!-- Lightbox -->
-<div id="lightbox" onclick="this.classList.remove('open')">
-  <img id="lightbox-img" src="" alt="">
+<!-- Nouvelle tâche -->
+<div class="modal-overlay" id="modal-task">
+  <div class="modal">
+    <div class="modal-title">✅ Nouvelle tâche</div>
+    <div class="form-group">
+      <label class="form-label">Nom de la tâche</label>
+      <input type="text" class="form-input" id="t-name" placeholder="Ex: Créer l'affiche du prochain événement…">
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Assigné à</label>
+        <input type="text" class="form-input" id="t-assignee" placeholder="Nom…">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Date limite</label>
+        <input type="date" class="form-input" id="t-due">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Catégorie</label>
+        <select class="form-select" id="t-cat">
+          <option value="affiche">🎨 Affiche</option>
+          <option value="video">🎬 Vidéo</option>
+          <option value="publication">📱 Publication</option>
+          <option value="redaction">✍️ Rédaction</option>
+          <option value="general">📋 Général</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Statut</label>
+        <select class="form-select" id="t-status">
+          <option value="todo">À faire</option>
+          <option value="inprogress">En cours</option>
+          <option value="done">Terminé</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeTaskModal()">Annuler</button>
+      <button class="btn btn-primary" onclick="saveTask()">💾 Ajouter</button>
+    </div>
+  </div>
 </div>
 
-<!-- Toast container -->
+<!-- Nouveau sondage -->
+<div class="modal-overlay" id="modal-poll">
+  <div class="modal">
+    <div class="modal-title">📊 Créer un sondage</div>
+    <div class="form-group">
+      <label class="form-label">Question</label>
+      <input type="text" class="form-input" id="p-question" placeholder="Ex: Quel format pour notre prochain contenu ?">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Options de vote</label>
+      <div id="poll-options-inputs">
+        <input type="text" class="form-input" style="margin-bottom:8px" placeholder="Option 1…">
+        <input type="text" class="form-input" style="margin-bottom:8px" placeholder="Option 2…">
+        <input type="text" class="form-input" style="margin-bottom:8px" placeholder="Option 3 (optionnel)…">
+        <input type="text" class="form-input" style="margin-bottom:8px" placeholder="Option 4 (optionnel)…">
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closePollModal()">Annuler</button>
+      <button class="btn btn-primary" onclick="savePoll()">🚀 Lancer le sondage</button>
+    </div>
+  </div>
+</div>
+
+<!-- Confirm delete -->
+<div class="modal-overlay" id="modal-confirm">
+  <div class="modal confirm-modal">
+    <div class="confirm-icon">🗑️</div>
+    <div class="confirm-title">Supprimer ?</div>
+    <div class="confirm-text" id="confirm-text">Cette action est irréversible.</div>
+    <div class="modal-actions" style="justify-content:center;">
+      <button class="btn btn-secondary" onclick="document.getElementById('modal-confirm').classList.remove('open')">Annuler</button>
+      <button class="btn btn-danger" id="confirm-ok-btn">Supprimer</button>
+    </div>
+  </div>
+</div>
+
 <div id="toast-container"></div>
 
 <script>
-// ═══ STATE ═══
-let myName = '';
-let myColor = '';
-let members = {}; // id -> { name, color }
-let myId = '';
-let mediaRecorder = null;
-let recordingChunks = [];
-let isRecording = false;
-let recordStart = null;
+// ═══════════════════════════════════════
+//  DATA STORE (localStorage pour calendrier/tâches/sondages)
+// ═══════════════════════════════════════
+const STORE = { meetings:'revcom_meetings', tasks:'revcom_tasks', polls:'revcom_polls' };
 
-const COLORS = [
-  'linear-gradient(135deg,#E8192C,#FF6B35)',
-  'linear-gradient(135deg,#1A6EFF,#00C3FF)',
-  'linear-gradient(135deg,#7B2FBE,#E040FB)',
-  'linear-gradient(135deg,#FFD600,#FF8F00)',
-  'linear-gradient(135deg,#00BFA5,#1A6EFF)',
-  'linear-gradient(135deg,#E8192C,#7B2FBE)',
-  'linear-gradient(135deg,#FF6B35,#FFD600)',
-  'linear-gradient(135deg,#00C3FF,#7B2FBE)',
-];
-
-// Simulated multi-user via localStorage + BroadcastChannel
-const channel = new BroadcastChannel('Rev com_v2');
-const STORAGE_KEY = 'Rev com_members';
-const MSGS_KEY = 'Rev com_messages';
-
-// ═══ LOGIN ═══
-document.getElementById('username-input').addEventListener('keydown', e => {
-  if (e.key === 'Enter') joinRoom();
-});
-
-function joinRoom() {
-  const val = document.getElementById('username-input').value.trim();
-  if (!val) { shake(document.getElementById('username-input')); return; }
-  myName = val;
-  myId = 'user_' + Date.now() + '_' + Math.random().toString(36).slice(2,6);
-  myColor = COLORS[Math.floor(Math.random() * COLORS.length)];
-
-  // Register self
-  registerMember();
-
-  document.getElementById('login-screen').style.display = 'none';
-  document.getElementById('app').classList.add('visible');
-
-  document.getElementById('my-name-display').textContent = myName;
-  const av = document.getElementById('my-avatar');
-  av.textContent = initials(myName);
-  av.style.background = myColor;
-
-  loadMessages();
-  updateMembersList();
-  updateHeaderStatus();
-
-  // Broadcast join
-  broadcast({ type: 'join', id: myId, name: myName, color: myColor });
-
-  // Post join notification
-  postSystemMsg(`🟢 ${myName} a rejoint la réunion`);
-
-  // Cleanup on close
-  window.addEventListener('beforeunload', leaveRoom);
-  document.getElementById('msg-input').focus();
+function load(key) {
+  try { return JSON.parse(localStorage.getItem(STORE[key]) || '[]'); } catch { return []; }
 }
+function save(key, data) { localStorage.setItem(STORE[key], JSON.stringify(data)); }
 
-function leaveRoom() {
-  if (!myId) return;
-  removeMember(myId);
-  broadcast({ type: 'leave', id: myId, name: myName });
-  postSystemMsg(`🔴 ${myName} a quitté la réunion`);
-  myId = '';
-  document.getElementById('app').classList.remove('visible');
-  document.getElementById('login-screen').style.display = 'flex';
-  document.getElementById('username-input').value = '';
-  document.getElementById('messages').innerHTML = '';
-}
-
-// ═══ MEMBERS ═══
-function registerMember() {
-  const m = getMembers();
-  m[myId] = { name: myName, color: myColor, ts: Date.now() };
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(m));
-}
-
-function removeMember(id) {
-  const m = getMembers();
-  delete m[id];
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(m));
-}
-
-function getMembers() {
-  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); } catch { return {}; }
-}
-
-function updateMembersList() {
-  const m = getMembers();
-  const list = document.getElementById('members-list');
-  list.innerHTML = '';
-  let count = 0;
-  for (const [id, data] of Object.entries(m)) {
-    count++;
-    const div = document.createElement('div');
-    div.className = 'member-item';
-    div.innerHTML = `
-      <div class="member-avatar" style="background:${data.color}">${initials(data.name)}</div>
-      <div class="member-name">${esc(data.name)}${id === myId ? ' (moi)' : ''}</div>
-      <div class="member-status">En ligne</div>
-    `;
-    list.appendChild(div);
+// ═══════════════════════════════════════
+//  NAVIGATION
+// ═══════════════════════════════════════
+function showPage(id, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  if (btn) btn.classList.add('active');
+  else {
+    // find button
+    document.querySelectorAll('.nav-tab').forEach(t => {
+      if (t.onclick && t.onclick.toString().includes("'"+id+"'")) t.classList.add('active');
+    });
   }
-  document.getElementById('member-count').textContent = count + (count > 1 ? ' membres' : ' membre');
-  updateHeaderStatus();
-}
-
-function updateHeaderStatus() {
-  const count = Object.keys(getMembers()).length;
-  document.getElementById('header-status').textContent = `${count} participant${count > 1 ? 's' : ''} · En réunion`;
-}
-
-// ═══ BROADCAST ═══
-channel.addEventListener('message', e => {
-  const d = e.data;
-  if (d.type === 'join') {
-    showToast(`🟢 ${d.name} a rejoint la réunion`, '#4ADE80');
-    updateMembersList();
-    updateHeaderStatus();
-  } else if (d.type === 'leave') {
-    showToast(`🔴 ${d.name} a quitté la réunion`, '#E8192C');
-    updateMembersList();
-    updateHeaderStatus();
-  } else if (d.type === 'message') {
-    renderMessage(d.msg);
+  if (id === 'calendrier') renderMeetings();
+  if (id === 'taches') renderTasks();
+  if (id === 'sondages') renderPolls();
+  if (id === 'discussion') {
+    clearChatBadge();
+    if (chatState.me) {
+      chatHeartbeat();
+    }
   }
-});
-
-function broadcast(data) {
-  channel.postMessage(data);
 }
 
-// ═══ MESSAGES ═══
-function getMessages() {
-  try { return JSON.parse(localStorage.getItem(MSGS_KEY) || '[]'); } catch { return []; }
+// ═══════════════════════════════════════
+//  DATE UTILS
+// ═══════════════════════════════════════
+const MONTHS_FR = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
+const MONTHS_SHORT = ['Jan','Fév','Mar','Avr','Mai','Juin','Juil','Aoû','Sep','Oct','Nov','Déc'];
+const DAYS_FR = ['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'];
+
+let calYear = new Date().getFullYear();
+let calMonth = new Date().getMonth();
+
+function formatDate(iso) {
+  if (!iso) return '';
+  const d = new Date(iso + 'T00:00:00');
+  return `${d.getDate()} ${MONTHS_SHORT[d.getMonth()]} ${d.getFullYear()}`;
 }
 
-function saveMessage(msg) {
-  const msgs = getMessages();
-  msgs.push(msg);
-  if (msgs.length > 200) msgs.splice(0, msgs.length - 200);
-  localStorage.setItem(MSGS_KEY, JSON.stringify(msgs));
+function initDate() {
+  document.getElementById('current-date').textContent = new Date().toLocaleDateString('fr-FR', { day:'2-digit', month:'short', year:'numeric' }).toUpperCase();
 }
 
-function loadMessages() {
-  const msgs = getMessages();
-  const container = document.getElementById('messages');
-  container.innerHTML = '';
-  msgs.forEach(m => renderMessage(m, false));
-  scrollBottom();
+// ═══════════════════════════════════════
+//  MINI CALENDAR
+// ═══════════════════════════════════════
+function renderMiniCal() {
+  const grid = document.getElementById('mini-cal-grid');
+  document.getElementById('mini-cal-title').textContent = `${MONTHS_FR[calMonth]} ${calYear}`;
+
+  const meetings = load('meetings');
+  const meetingDays = new Set(meetings.map(m => m.date));
+
+  grid.innerHTML = '';
+  DAYS_FR.forEach(d => {
+    const el = document.createElement('div');
+    el.className = 'cal-day-name';
+    el.textContent = d[0];
+    grid.appendChild(el);
+  });
+
+  const firstDay = new Date(calYear, calMonth, 1).getDay();
+  const offset = (firstDay === 0 ? 6 : firstDay - 1);
+  const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+  const daysInPrev = new Date(calYear, calMonth, 0).getDate();
+  const today = new Date();
+
+  for (let i = 0; i < offset; i++) {
+    const el = document.createElement('div');
+    el.className = 'cal-day other-month';
+    el.textContent = daysInPrev - offset + 1 + i;
+    grid.appendChild(el);
+  }
+
+  for (let d = 1; d <= daysInMonth; d++) {
+    const el = document.createElement('div');
+    el.className = 'cal-day';
+    el.textContent = d;
+    const iso = `${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    if (today.getFullYear() === calYear && today.getMonth() === calMonth && today.getDate() === d)
+      el.classList.add('today');
+    if (meetingDays.has(iso)) el.classList.add('has-event');
+    el.onclick = () => highlightDay(iso, el);
+    grid.appendChild(el);
+  }
+
+  const remaining = 7 - ((offset + daysInMonth) % 7);
+  if (remaining < 7) {
+    for (let i = 1; i <= remaining; i++) {
+      const el = document.createElement('div');
+      el.className = 'cal-day other-month';
+      el.textContent = i;
+      grid.appendChild(el);
+    }
+  }
 }
 
-function sendMessage() {
-  const input = document.getElementById('msg-input');
-  const text = input.value.trim();
-  if (!text || !myId) return;
+function highlightDay(iso, el) {
+  document.querySelectorAll('.cal-day').forEach(d => d.classList.remove('selected'));
+  el.classList.add('selected');
+  const card = document.querySelector(`[data-date="${iso}"]`);
+  if (card) card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
 
-  const msg = {
-    id: 'msg_' + Date.now(),
-    type: 'text',
-    senderId: myId,
-    senderName: myName,
-    senderColor: myColor,
-    text,
-    time: now()
+function changeMonth(dir) {
+  calMonth += dir;
+  if (calMonth > 11) { calMonth = 0; calYear++; }
+  if (calMonth < 0) { calMonth = 11; calYear--; }
+  renderMiniCal();
+}
+
+// ═══════════════════════════════════════
+//  MEETINGS
+// ═══════════════════════════════════════
+let editingMeetingId = null;
+
+function openMeetingModal(id = null) {
+  editingMeetingId = id;
+  document.getElementById('meeting-modal-title').textContent = id ? 'Modifier la réunion' : 'Nouvelle réunion';
+  if (id) {
+    const m = load('meetings').find(x => x.id === id);
+    if (m) {
+      document.getElementById('m-theme').value = m.theme || '';
+      document.getElementById('m-date').value = m.date || '';
+      document.getElementById('m-time').value = m.time || '';
+      document.getElementById('m-resp').value = m.resp || '';
+      document.getElementById('m-color').value = m.color || 'rouge';
+      document.getElementById('m-notes').value = m.notes || '';
+    }
+  } else {
+    ['m-theme','m-date','m-time','m-resp','m-notes'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('m-color').value = 'rouge';
+    document.getElementById('m-date').value = new Date().toISOString().split('T')[0];
+  }
+  document.getElementById('modal-meeting').classList.add('open');
+}
+
+function closeMeetingModal() {
+  document.getElementById('modal-meeting').classList.remove('open');
+  editingMeetingId = null;
+}
+
+function saveMeeting() {
+  const theme = document.getElementById('m-theme').value.trim();
+  const date = document.getElementById('m-date').value;
+  if (!theme || !date) { showToast('⚠️ Remplissez au moins le thème et la date.', '#FFD600'); return; }
+
+  const meetings = load('meetings');
+  const obj = {
+    theme, date,
+    time: document.getElementById('m-time').value,
+    resp: document.getElementById('m-resp').value.trim(),
+    color: document.getElementById('m-color').value,
+    notes: document.getElementById('m-notes').value.trim()
   };
-  input.value = '';
-  input.style.height = '';
-  saveMessage(msg);
-  renderMessage(msg);
-  broadcast({ type: 'message', msg });
+
+  if (editingMeetingId) {
+    const idx = meetings.findIndex(m => m.id === editingMeetingId);
+    if (idx >= 0) meetings[idx] = { ...meetings[idx], ...obj };
+    showToast('✅ Réunion modifiée !', '#22C55E');
+  } else {
+    meetings.push({ id: 'mtg_' + Date.now(), ...obj });
+    showToast('📅 Réunion ajoutée !', '#22C55E');
+  }
+
+  meetings.sort((a,b) => a.date.localeCompare(b.date));
+  save('meetings', meetings);
+  closeMeetingModal();
+  renderMeetings();
+  renderMiniCal();
 }
 
-function sendImage(e) {
-  const file = e.target.files[0];
-  if (!file || !myId) return;
-  const reader = new FileReader();
-  reader.onload = ev => {
-    const msg = {
-      id: 'msg_' + Date.now(),
-      type: 'image',
-      senderId: myId,
-      senderName: myName,
-      senderColor: myColor,
-      src: ev.target.result,
-      time: now()
-    };
-    saveMessage(msg);
-    renderMessage(msg);
-    broadcast({ type: 'message', msg });
-  };
-  reader.readAsDataURL(file);
-  e.target.value = '';
+function deleteMeeting(id) {
+  confirm2('Supprimer cette réunion ?', () => {
+    save('meetings', load('meetings').filter(m => m.id !== id));
+    renderMeetings(); renderMiniCal();
+    showToast('🗑️ Réunion supprimée', '#E8192C');
+  });
 }
 
-function postSystemMsg(text) {
-  const msg = { id: 'sys_' + Date.now(), type: 'system', text };
-  saveMessage(msg);
-  renderMessage(msg);
-  broadcast({ type: 'message', msg });
-}
+function renderMeetings() {
+  const meetings = load('meetings');
+  const list = document.getElementById('meetings-list');
+  const upcoming = document.getElementById('upcoming-list');
+  renderMiniCal();
 
-function renderMessage(msg, doScroll = true) {
-  const container = document.getElementById('messages');
-
-  if (msg.type === 'system') {
-    const div = document.createElement('div');
-    div.className = 'notif-msg';
-    div.innerHTML = `<span class="notif-badge">${esc(msg.text)}</span>`;
-    container.appendChild(div);
-    if (doScroll) scrollBottom();
+  if (!meetings.length) {
+    list.innerHTML = `<div class="empty-state"><div class="empty-icon">📅</div><div class="empty-title">Aucune réunion programmée</div><div class="empty-sub">Cliquez sur "Nouvelle réunion" pour commencer.</div></div>`;
+    upcoming.innerHTML = `<div style="color:var(--texte-muted);font-size:12px;text-align:center;padding:20px 0;">Aucun événement à venir</div>`;
     return;
   }
 
-  const isOwn = msg.senderId === myId;
-  const group = document.createElement('div');
-  group.className = 'msg-group';
-
-  let contentHtml = '';
-  if (msg.type === 'text') {
-    contentHtml = `<div class="msg-bubble${isOwn ? ' own' : ''}">${esc(msg.text)}</div>`;
-  } else if (msg.type === 'image') {
-    contentHtml = `<div class="msg-bubble${isOwn ? ' own' : ''}" style="padding:6px;">
-      <img class="msg-image" src="${msg.src}" alt="Image" onclick="openLightbox('${msg.src}')">
-    </div>`;
-  } else if (msg.type === 'voice') {
-    contentHtml = `<div class="msg-bubble${isOwn ? ' own' : ''}">
-      <div class="voice-msg">
-        <button class="voice-play" onclick="playVoice('${msg.id}',this)" data-src="${msg.src}">▶</button>
-        <div class="voice-waveform">${generateWaveBars()}</div>
-        <span class="voice-duration">${msg.duration}</span>
+  const today = new Date().toISOString().split('T')[0];
+  list.innerHTML = '';
+  meetings.forEach(m => {
+    const d = new Date(m.date + 'T00:00:00');
+    const card = document.createElement('div');
+    card.className = `meeting-card color-${m.color}`;
+    card.dataset.date = m.date;
+    card.innerHTML = `
+      <div class="meeting-date-block date-block-${m.color}">
+        <div class="meeting-day">${d.getDate()}</div>
+        <div class="meeting-month">${MONTHS_SHORT[d.getMonth()]}</div>
       </div>
-    </div>`;
+      <div class="meeting-info">
+        <div class="meeting-theme">${esc(m.theme)}</div>
+        <div class="meeting-meta">
+          ${m.time ? `<div class="meta-chip"><span>🕐</span>${m.time}</div>` : ''}
+          <div class="meta-chip"><span>📆</span>${formatDate(m.date)}</div>
+        </div>
+        ${m.resp ? `<div class="meeting-resp"><div class="resp-dot"></div>${esc(m.resp)}</div>` : ''}
+        ${m.notes ? `<div style="font-size:11px;color:var(--texte-doux);margin-top:6px;line-height:1.5;">${esc(m.notes)}</div>` : ''}
+      </div>
+      <div class="meeting-actions">
+        <button class="btn btn-ghost btn-sm" onclick="openMeetingModal('${m.id}')">✏️</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteMeeting('${m.id}')">🗑️</button>
+      </div>
+    `;
+    list.appendChild(card);
+  });
+
+  upcoming.innerHTML = '';
+  const next5 = meetings.filter(m => m.date >= today).slice(0, 5);
+  if (!next5.length) {
+    upcoming.innerHTML = `<div style="color:var(--texte-muted);font-size:12px;text-align:center;padding:20px 0;">Aucun événement à venir</div>`;
+    return;
+  }
+  const colors = { rouge:'#E8192C', bleu:'#1A6EFF', violet:'#7B2FBE', jaune:'#FFD600', vert:'#22C55E', orange:'#F97316' };
+  next5.forEach(m => {
+    const item = document.createElement('div');
+    item.className = 'upcoming-item';
+    item.innerHTML = `
+      <div class="upcoming-dot-line"><div class="u-dot" style="background:${colors[m.color] || '#888'}"></div><div class="u-line"></div></div>
+      <div class="upcoming-info"><div class="upcoming-theme">${esc(m.theme)}</div><div class="upcoming-time">${formatDate(m.date)}${m.time ? ' · ' + m.time : ''}</div></div>
+    `;
+    upcoming.appendChild(item);
+  });
+}
+
+// ═══════════════════════════════════════
+//  TASKS
+// ═══════════════════════════════════════
+let taskFilter = 'all';
+const CAT_LABELS = { affiche:'🎨 Affiche', video:'🎬 Vidéo', publication:'📱 Publication', redaction:'✍️ Rédaction', general:'📋 Général' };
+const AVATAR_COLORS = ['#E8192C','#1A6EFF','#7B2FBE','#22C55E','#F97316','#FFD600'];
+
+function nameToColor(name) {
+  let h = 0;
+  for (let i = 0; i < name.length; i++) h = name.charCodeAt(i) + (h << 5) - h;
+  return AVATAR_COLORS[Math.abs(h) % AVATAR_COLORS.length];
+}
+
+function initials2(name) {
+  return name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0,2);
+}
+
+function openTaskModal(status = 'todo') {
+  document.getElementById('t-name').value = '';
+  document.getElementById('t-assignee').value = '';
+  document.getElementById('t-due').value = '';
+  document.getElementById('t-cat').value = 'affiche';
+  document.getElementById('t-status').value = status;
+  document.getElementById('modal-task').classList.add('open');
+}
+
+function closeTaskModal() { document.getElementById('modal-task').classList.remove('open'); }
+
+function saveTask() {
+  const name = document.getElementById('t-name').value.trim();
+  if (!name) { showToast('⚠️ Entrez un nom de tâche.', '#FFD600'); return; }
+  const tasks = load('tasks');
+  const status = document.getElementById('t-status').value;
+  tasks.push({
+    id: 'task_' + Date.now(), name,
+    assignee: document.getElementById('t-assignee').value.trim(),
+    due: document.getElementById('t-due').value,
+    cat: document.getElementById('t-cat').value,
+    status,
+    done: status === 'done',
+  });
+  save('tasks', tasks);
+  closeTaskModal();
+  renderTasks();
+  updateTasksBadge();
+  showToast('✅ Tâche ajoutée !', '#22C55E');
+}
+
+function toggleTask(id) {
+  const tasks = load('tasks');
+  const t = tasks.find(x => x.id === id);
+  if (t) { t.done = !t.done; t.status = t.done ? 'done' : 'inprogress'; }
+  save('tasks', tasks);
+  renderTasks();
+  updateTasksBadge();
+}
+
+function deleteTask(id) {
+  confirm2('Supprimer cette tâche ?', () => {
+    save('tasks', load('tasks').filter(t => t.id !== id));
+    renderTasks(); updateTasksBadge();
+    showToast('🗑️ Tâche supprimée', '#E8192C');
+  });
+}
+
+function filterTasks(filter, btn) {
+  taskFilter = filter;
+  document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  renderTasks();
+}
+
+function renderTasks() {
+  const tasks = load('tasks');
+  const visible = { todo: [], inprogress: [], done: [] };
+  tasks.forEach(t => {
+    const s = t.done ? 'done' : (t.status || 'todo');
+    if (taskFilter === 'all' || taskFilter === s) visible[s].push(t);
+  });
+
+  ['todo','inprogress','done'].forEach(status => {
+    const col = document.getElementById('col-' + status);
+    const count = document.getElementById('count-' + status);
+    const items = visible[status] || [];
+    count.textContent = items.length;
+    col.innerHTML = '';
+    if (!items.length) {
+      col.innerHTML = `<div style="text-align:center;padding:20px 0;color:var(--texte-muted);font-size:12px;">Aucune tâche</div>`;
+      return;
+    }
+    items.forEach(t => {
+      const div = document.createElement('div');
+      div.className = `task-item${t.done ? ' done' : ''}`;
+      const color = t.assignee ? nameToColor(t.assignee) : '#888';
+      const initls = t.assignee ? initials2(t.assignee) : '?';
+      div.innerHTML = `
+        <div class="task-top">
+          <div class="task-check${t.done ? ' checked' : ''}" onclick="toggleTask('${t.id}')"></div>
+          <div class="task-name${t.done ? ' done-text' : ''}">${esc(t.name)}</div>
+          <button class="task-del-btn" onclick="deleteTask('${t.id}')">✕</button>
+        </div>
+        <div class="task-meta">
+          ${t.assignee ? `<div class="task-assignee"><div class="assignee-av" style="background:${color}">${initls}</div>${esc(t.assignee)}</div>` : ''}
+          <span class="task-cat cat-${t.cat}">${CAT_LABELS[t.cat] || t.cat}</span>
+          ${t.due ? `<span class="task-due">📅 ${formatDate(t.due)}</span>` : ''}
+        </div>
+      `;
+      col.appendChild(div);
+    });
+  });
+}
+
+function updateTasksBadge() {
+  const count = load('tasks').filter(t => !t.done).length;
+  const badge = document.getElementById('tasks-badge');
+  if (count) { badge.textContent = count; badge.style.display = ''; }
+  else badge.style.display = 'none';
+}
+
+// ═══════════════════════════════════════
+//  POLLS
+// ═══════════════════════════════════════
+function openPollModal() {
+  document.getElementById('p-question').value = '';
+  document.querySelectorAll('#poll-options-inputs .form-input').forEach(i => i.value = '');
+  document.getElementById('modal-poll').classList.add('open');
+}
+
+function closePollModal() { document.getElementById('modal-poll').classList.remove('open'); }
+
+function savePoll() {
+  const question = document.getElementById('p-question').value.trim();
+  if (!question) { showToast('⚠️ Entrez une question.', '#FFD600'); return; }
+  const options = Array.from(document.querySelectorAll('#poll-options-inputs .form-input')).map(el => el.value.trim()).filter(Boolean);
+  if (options.length < 2) { showToast('⚠️ Au moins 2 options requises.', '#FFD600'); return; }
+
+  const polls = load('polls');
+  polls.unshift({ id: 'poll_' + Date.now(), question, options: options.map(label => ({ label, votes: 0 })), open: true, totalVotes: 0, voted: false });
+  save('polls', polls);
+  closePollModal();
+  renderPolls();
+  showToast('🚀 Sondage lancé !', '#22C55E');
+}
+
+function votePoll(pollId, optIdx) {
+  const polls = load('polls');
+  const poll = polls.find(p => p.id === pollId);
+  if (!poll || !poll.open || poll.voted) return;
+  poll.options[optIdx].votes++;
+  poll.totalVotes++;
+  poll.voted = true;
+  save('polls', polls);
+  renderPolls();
+  showToast('🗳️ Vote enregistré !', '#1A6EFF');
+}
+
+function closePollToggle(pollId) {
+  const polls = load('polls');
+  const poll = polls.find(p => p.id === pollId);
+  if (poll) { poll.open = !poll.open; save('polls', polls); renderPolls(); }
+}
+
+function deletePoll(id) {
+  confirm2('Supprimer ce sondage ?', () => {
+    save('polls', load('polls').filter(p => p.id !== id));
+    renderPolls();
+    showToast('🗑️ Sondage supprimé', '#E8192C');
+  });
+}
+
+const BAR_COLORS = ['rgba(232,25,44,0.2)','rgba(26,110,255,0.2)','rgba(123,47,190,0.2)','rgba(255,214,0,0.2)','rgba(34,197,94,0.2)','rgba(249,115,22,0.2)'];
+const TEXT_COLORS = ['#E8192C','#60A5FA','#C084FC','#FFD600','#4ADE80','#F97316'];
+
+function renderPolls() {
+  const polls = load('polls');
+  const grid = document.getElementById('polls-grid');
+  if (!polls.length) {
+    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">📊</div><div class="empty-title">Aucun sondage actif</div><div class="empty-sub">Créez un sondage pour recueillir l'avis de votre équipe.</div></div>`;
+    return;
+  }
+  grid.innerHTML = '';
+  polls.forEach(poll => {
+    const winnerIdx = poll.options.reduce((wi, o, i, arr) => o.votes > arr[wi].votes ? i : wi, 0);
+    const card = document.createElement('div');
+    card.className = 'poll-card';
+    const optionsHtml = poll.options.map((opt, i) => {
+      const pct = poll.totalVotes > 0 ? Math.round((opt.votes / poll.totalVotes) * 100) : 0;
+      const isWinner = poll.voted && i === winnerIdx && poll.totalVotes > 0;
+      return `
+        <div class="poll-option${poll.voted ? ' voted' : ''}${isWinner ? ' winner' : ''}" onclick="${!poll.voted && poll.open ? `votePoll('${poll.id}', ${i})` : ''}">
+          <div class="poll-option-bar" style="width:${pct}%;background:${BAR_COLORS[i % BAR_COLORS.length]}"></div>
+          <div class="poll-option-content">
+            <div class="poll-option-label" style="${isWinner ? 'color:'+TEXT_COLORS[i % TEXT_COLORS.length] : ''}">${isWinner ? '🏆 ' : ''}${esc(opt.label)}</div>
+            <div style="text-align:right">
+              ${poll.voted || !poll.open ? `<div class="poll-option-pct" style="color:${TEXT_COLORS[i % TEXT_COLORS.length]}">${pct}%</div><div class="poll-option-votes">${opt.votes} vote${opt.votes !== 1 ? 's' : ''}</div>` : ''}
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('');
+    card.innerHTML = `
+      <div class="poll-top">
+        <div class="poll-question">${esc(poll.question)}</div>
+        <div class="poll-status-chip ${poll.open ? 'poll-open' : 'poll-closed'}">${poll.open ? '● Ouvert' : '● Fermé'}</div>
+      </div>
+      <div class="poll-options">${optionsHtml}</div>
+      <div class="poll-footer">
+        <div class="poll-votes-total">🗳️ ${poll.totalVotes} vote${poll.totalVotes !== 1 ? 's' : ''}${!poll.voted && poll.open ? ' · Cliquez pour voter' : ''}</div>
+        <button class="btn btn-ghost btn-sm" onclick="closePollToggle('${poll.id}')">${poll.open ? '⏹ Fermer' : '▶ Rouvrir'}</button>
+        <button class="poll-del-btn" onclick="deletePoll('${poll.id}')">🗑️</button>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+// ═══════════════════════════════════════
+//  DISCUSSION MODULE — REAL-TIME SHARED CHAT
+//  Uses window.storage (artifact storage API) for cross-device sync
+// ═══════════════════════════════════════
+
+const chatState = {
+  me: null,
+  myId: null,
+  messages: [],
+  onlineUsers: {},
+  lastMessageId: null,
+  pollInterval: null,
+  heartbeatInterval: null,
+  unread: 0,
+  isOnDiscussionPage: false
+};
+
+// Generate or retrieve persistent user ID
+function getMyId() {
+  let id = localStorage.getItem('revcom_chat_uid');
+  if (!id) {
+    id = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    localStorage.setItem('revcom_chat_uid', id);
+  }
+  return id;
+}
+
+async function chatLogin() {
+  const input = document.getElementById('login-name-input');
+  const name = input.value.trim();
+  if (!name) {
+    input.style.borderColor = 'var(--rouge)';
+    input.placeholder = 'Entrez votre prénom...';
+    setTimeout(() => { input.style.borderColor = ''; }, 2000);
+    return;
   }
 
-  group.innerHTML = `
-    <div class="msg-header${isOwn ? ' own' : ''}" style="${isOwn ? 'justify-content:flex-end' : ''}">
-      <span class="msg-sender" style="color:${firstColor(msg.senderColor)}">${esc(msg.senderName)}</span>
-      <span class="msg-time">${msg.time}</span>
+  chatState.me = name;
+  chatState.myId = getMyId();
+
+  // Show chat UI
+  document.getElementById('chat-login').style.display = 'none';
+  document.getElementById('chat-layout').classList.add('visible');
+
+  // Announce arrival
+  await postSystemMessage(name + ' a rejoint la discussion 👋');
+
+  // Register as online
+  await chatHeartbeat();
+
+  // Load existing messages
+  await loadChatMessages();
+
+  // Start polling for new messages & online users
+  startChatPolling();
+
+  showToast('💬 Vous êtes connecté en tant que ' + name, '#1A6EFF');
+}
+
+async function chatLogout() {
+  if (!chatState.me) return;
+
+  // Announce departure
+  await postSystemMessage(chatState.me + ' a quitté la discussion');
+
+  // Remove from online
+  try {
+    await window.storage.delete('revcom_online_' + chatState.myId, true);
+  } catch(e) {}
+
+  // Stop polling
+  stopChatPolling();
+
+  chatState.me = null;
+  chatState.myId = null;
+  chatState.messages = [];
+  chatState.onlineUsers = {};
+  chatState.lastMessageId = null;
+
+  // Reset UI
+  document.getElementById('chat-login').style.display = '';
+  document.getElementById('chat-layout').classList.remove('visible');
+  document.getElementById('chat-messages').innerHTML = `
+    <div class="chat-empty" id="chat-empty">
+      <div class="chat-empty-icon">💬</div>
+      <div class="chat-empty-text">Aucun message encore.<br>Soyez le premier à écrire !</div>
     </div>
-    <div class="msg-row${isOwn ? ' own' : ''}">
-      <div class="msg-avatar" style="background:${msg.senderColor}">${initials(msg.senderName)}</div>
-      ${contentHtml}
+  `;
+  document.getElementById('login-name-input').value = '';
+}
+
+async function sendMessage() {
+  const input = document.getElementById('chat-input');
+  const text = input.value.trim();
+  if (!text || !chatState.me) return;
+
+  input.value = '';
+  input.style.height = 'auto';
+
+  const msg = {
+    id: 'msg_' + Date.now() + '_' + Math.random().toString(36).substr(2,6),
+    senderId: chatState.myId,
+    senderName: chatState.me,
+    text: text,
+    ts: Date.now(),
+    type: 'message'
+  };
+
+  // Save to shared storage
+  try {
+    await window.storage.set('revcom_msg_' + msg.id, JSON.stringify(msg), true);
+    // Update message index
+    await appendToMessageIndex(msg.id, msg.ts);
+    // Optimistically show in UI
+    appendMessageToUI(msg);
+    chatState.lastMessageId = msg.id;
+  } catch(e) {
+    showToast('❌ Erreur d\'envoi. Réessayez.', '#E8192C');
+    console.error('Send error:', e);
+  }
+}
+
+async function postSystemMessage(text) {
+  const msg = {
+    id: 'sys_' + Date.now() + '_' + Math.random().toString(36).substr(2,6),
+    text: text,
+    ts: Date.now(),
+    type: 'system'
+  };
+  try {
+    await window.storage.set('revcom_msg_' + msg.id, JSON.stringify(msg), true);
+    await appendToMessageIndex(msg.id, msg.ts);
+  } catch(e) {
+    console.error('System msg error:', e);
+  }
+}
+
+// Message index: keeps sorted list of message IDs
+async function appendToMessageIndex(msgId, ts) {
+  let index = [];
+  try {
+    const res = await window.storage.get('revcom_msg_index', true);
+    if (res) index = JSON.parse(res.value);
+  } catch(e) { index = []; }
+
+  index.push({ id: msgId, ts });
+  // Keep last 200 messages
+  if (index.length > 200) index = index.slice(-200);
+
+  try {
+    await window.storage.set('revcom_msg_index', JSON.stringify(index), true);
+  } catch(e) { console.error('Index error:', e); }
+}
+
+async function loadChatMessages() {
+  try {
+    const res = await window.storage.get('revcom_msg_index', true);
+    if (!res) return;
+
+    const index = JSON.parse(res.value);
+    const msgs = [];
+
+    for (const entry of index) {
+      try {
+        const msgRes = await window.storage.get('revcom_msg_' + entry.id, true);
+        if (msgRes) msgs.push(JSON.parse(msgRes.value));
+      } catch(e) {}
+    }
+
+    msgs.sort((a,b) => a.ts - b.ts);
+    chatState.messages = msgs;
+
+    // Render all messages
+    const container = document.getElementById('chat-messages');
+    container.innerHTML = '';
+
+    if (!msgs.length) {
+      container.innerHTML = `<div class="chat-empty" id="chat-empty"><div class="chat-empty-icon">💬</div><div class="chat-empty-text">Aucun message encore.<br>Soyez le premier à écrire !</div></div>`;
+      return;
+    }
+
+    msgs.forEach(m => appendMessageToUI(m, false));
+    scrollToBottom();
+
+    if (msgs.length > 0) {
+      chatState.lastMessageId = msgs[msgs.length - 1].id;
+    }
+  } catch(e) {
+    console.error('Load messages error:', e);
+  }
+}
+
+async function pollNewMessages() {
+  if (!chatState.me) return;
+
+  try {
+    const res = await window.storage.get('revcom_msg_index', true);
+    if (!res) return;
+
+    const index = JSON.parse(res.value);
+    const knownIds = new Set(chatState.messages.map(m => m.id));
+    const newEntries = index.filter(e => !knownIds.has(e.id));
+
+    for (const entry of newEntries) {
+      try {
+        const msgRes = await window.storage.get('revcom_msg_' + entry.id, true);
+        if (msgRes) {
+          const msg = JSON.parse(msgRes.value);
+          chatState.messages.push(msg);
+          appendMessageToUI(msg, true);
+
+          // Show badge if not on discussion page
+          if (!isCurrentPage('discussion') && msg.type === 'message' && msg.senderId !== chatState.myId) {
+            chatState.unread++;
+            updateChatBadge();
+          }
+        }
+      } catch(e) {}
+    }
+
+    if (newEntries.length > 0) {
+      chatState.messages.sort((a,b) => a.ts - b.ts);
+    }
+  } catch(e) {}
+}
+
+async function chatHeartbeat() {
+  if (!chatState.me || !chatState.myId) return;
+
+  const userData = {
+    name: chatState.me,
+    id: chatState.myId,
+    lastSeen: Date.now()
+  };
+
+  try {
+    await window.storage.set('revcom_online_' + chatState.myId, JSON.stringify(userData), true);
+  } catch(e) {}
+
+  // Load online users
+  await loadOnlineUsers();
+}
+
+async function loadOnlineUsers() {
+  try {
+    const res = await window.storage.list('revcom_online_', true);
+    if (!res || !res.keys) return;
+
+    const now = Date.now();
+    const onlineThreshold = 30000; // 30 seconds
+    const users = {};
+
+    for (const key of res.keys) {
+      try {
+        const userRes = await window.storage.get(key, true);
+        if (userRes) {
+          const u = JSON.parse(userRes.value);
+          // Only consider users active in last 30 seconds
+          if (now - u.lastSeen < onlineThreshold) {
+            users[u.id] = u;
+          }
+        }
+      } catch(e) {}
+    }
+
+    chatState.onlineUsers = users;
+    renderOnlineUsers();
+  } catch(e) {}
+}
+
+function renderOnlineUsers() {
+  const list = document.getElementById('online-users-list');
+  const badge = document.getElementById('online-count-badge');
+  const users = Object.values(chatState.onlineUsers);
+
+  badge.textContent = users.length + ' en ligne';
+
+  if (!users.length) {
+    list.innerHTML = `<div style="color:var(--texte-muted);font-size:12px;text-align:center;padding:16px 0;">Aucun membre en ligne</div>`;
+    return;
+  }
+
+  list.innerHTML = '';
+  users.forEach(u => {
+    const isMe = u.id === chatState.myId;
+    const color = nameToColor(u.name);
+    const initls = initials2(u.name);
+    const div = document.createElement('div');
+    div.className = 'online-user-item';
+    div.innerHTML = `
+      <div class="online-user-av" style="background:${color}">${initls}</div>
+      <div class="online-user-name">${esc(u.name)}</div>
+      ${isMe ? `<div class="online-user-you">vous</div>` : ''}
+    `;
+    list.appendChild(div);
+  });
+}
+
+function appendMessageToUI(msg, animate = true) {
+  const container = document.getElementById('chat-messages');
+
+  // Remove empty state
+  const empty = container.querySelector('.chat-empty');
+  if (empty) empty.remove();
+
+  if (msg.type === 'system') {
+    const div = document.createElement('div');
+    div.className = 'msg-system';
+    if (animate) div.style.animation = 'fadeIn 0.3s ease';
+    div.textContent = msg.text;
+    container.appendChild(div);
+    if (animate) scrollToBottom();
+    return;
+  }
+
+  const isOwn = msg.senderId === chatState.myId;
+  const color = nameToColor(msg.senderName);
+  const initls = initials2(msg.senderName);
+  const time = new Date(msg.ts).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+
+  const group = document.createElement('div');
+  group.className = 'msg-group';
+  if (animate) group.style.animation = 'fadeIn 0.25s ease';
+
+  group.innerHTML = `
+    <div class="msg-row ${isOwn ? 'own' : ''}">
+      <div class="msg-avatar" style="background:${color}">${initls}</div>
+      <div class="msg-content">
+        <div class="msg-sender">${isOwn ? 'Vous' : esc(msg.senderName)}</div>
+        <div class="msg-bubble ${isOwn ? 'own' : 'other'}">${esc(msg.text).replace(/\n/g, '<br>')}</div>
+        <div class="msg-time">${time}</div>
+      </div>
     </div>
   `;
 
-  // Store voice src for playback
-  if (msg.type === 'voice') {
-    group._voiceSrc = msg.src;
-  }
-
   container.appendChild(group);
-  if (doScroll) scrollBottom();
+  if (animate) scrollToBottom();
 }
 
-// ═══ VOICE ═══
-async function toggleVoice() {
-  const btn = document.getElementById('voice-btn');
-  if (!isRecording) {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      mediaRecorder = new MediaRecorder(stream);
-      recordingChunks = [];
-      recordStart = Date.now();
-      mediaRecorder.ondataavailable = e => recordingChunks.push(e.data);
-      mediaRecorder.onstop = () => {
-        const blob = new Blob(recordingChunks, { type: 'audio/webm' });
-        const duration = Math.round((Date.now() - recordStart) / 1000);
-        const mins = Math.floor(duration / 60).toString().padStart(2,'0');
-        const secs = (duration % 60).toString().padStart(2,'0');
-        const reader = new FileReader();
-        reader.onload = ev => {
-          const msg = {
-            id: 'voice_' + Date.now(),
-            type: 'voice',
-            senderId: myId,
-            senderName: myName,
-            senderColor: myColor,
-            src: ev.target.result,
-            duration: `${mins}:${secs}`,
-            time: now()
-          };
-          saveMessage(msg);
-          renderMessage(msg);
-          broadcast({ type: 'message', msg });
-        };
-        reader.readAsDataURL(blob);
-        stream.getTracks().forEach(t => t.stop());
-      };
-      mediaRecorder.start();
-      isRecording = true;
-      btn.classList.add('recording');
-      btn.textContent = '⏹ Arrêter';
-    } catch {
-      showToast('🎙️ Accès micro refusé', '#E8192C');
-    }
+function scrollToBottom() {
+  const container = document.getElementById('chat-messages');
+  setTimeout(() => { container.scrollTop = container.scrollHeight; }, 50);
+}
+
+function startChatPolling() {
+  stopChatPolling();
+  // Poll messages every 2.5 seconds
+  chatState.pollInterval = setInterval(pollNewMessages, 2500);
+  // Heartbeat every 20 seconds
+  chatState.heartbeatInterval = setInterval(chatHeartbeat, 20000);
+}
+
+function stopChatPolling() {
+  if (chatState.pollInterval) { clearInterval(chatState.pollInterval); chatState.pollInterval = null; }
+  if (chatState.heartbeatInterval) { clearInterval(chatState.heartbeatInterval); chatState.heartbeatInterval = null; }
+}
+
+function handleChatKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendMessage();
+  }
+}
+
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+}
+
+function isCurrentPage(id) {
+  return document.getElementById('page-' + id).classList.contains('active');
+}
+
+function updateChatBadge() {
+  const badge = document.getElementById('chat-badge');
+  if (chatState.unread > 0) {
+    badge.textContent = chatState.unread;
+    badge.style.display = '';
   } else {
-    mediaRecorder.stop();
-    isRecording = false;
-    btn.classList.remove('recording');
-    btn.textContent = '🎙️ Note vocale';
+    badge.style.display = 'none';
   }
 }
 
-function playVoice(id, btn) {
-  const src = btn.dataset.src;
-  if (!src) return;
-  const audio = new Audio(src);
-  btn.textContent = '⏸';
-  audio.play();
-  audio.onended = () => { btn.textContent = '▶'; };
-  audio.onerror = () => { btn.textContent = '▶'; showToast('Impossible de lire l\'audio', '#E8192C'); };
+function clearChatBadge() {
+  chatState.unread = 0;
+  updateChatBadge();
 }
 
-function generateWaveBars() {
-  let html = '';
-  for (let i = 0; i < 28; i++) {
-    const h = 6 + Math.random() * 22;
-    const delay = (i * 0.08).toFixed(2);
-    html += `<div class="voice-bar" style="height:${h}px;animation-delay:${delay}s"></div>`;
-  }
-  return html;
+// ═══════════════════════════════════════
+//  CONFIRM
+// ═══════════════════════════════════════
+function confirm2(text, cb) {
+  document.getElementById('confirm-text').textContent = text;
+  const modal = document.getElementById('modal-confirm');
+  modal.classList.add('open');
+  const btn = document.getElementById('confirm-ok-btn');
+  btn.onclick = () => { modal.classList.remove('open'); cb(); };
 }
 
-// ═══ LIGHTBOX ═══
-function openLightbox(src) {
-  document.getElementById('lightbox-img').src = src;
-  document.getElementById('lightbox').classList.add('open');
-}
+document.querySelectorAll('.modal-overlay').forEach(el => {
+  el.addEventListener('click', e => { if (e.target === el) el.classList.remove('open'); });
+});
 
-// ═══ TOAST ═══
-function showToast(text, color = '#FFD600') {
+// ═══════════════════════════════════════
+//  TOAST
+// ═══════════════════════════════════════
+function showToast(text, color = '#22C55E') {
   const c = document.getElementById('toast-container');
   const t = document.createElement('div');
   t.className = 'toast';
   t.innerHTML = `<div class="toast-dot" style="background:${color}"></div>${text}`;
   c.appendChild(t);
-  setTimeout(() => {
-    t.style.transition = 'opacity 0.3s';
-    t.style.opacity = '0';
-    setTimeout(() => t.remove(), 300);
-  }, 3500);
-}
-
-// ═══ SIDEBAR MOBILE ═══
-function toggleSidebar() {
-  document.getElementById('sidebar').classList.toggle('open');
-}
-function closeSidebar() {
-  document.getElementById('sidebar').classList.remove('open');
-}
-
-// ═══ AUTO-RESIZE TEXTAREA ═══
-document.addEventListener('DOMContentLoaded', () => {
-  const ta = document.getElementById('msg-input');
-  if (ta) {
-    ta.addEventListener('input', function() {
-      this.style.height = 'auto';
-      this.style.height = Math.min(this.scrollHeight, 120) + 'px';
-    });
-    ta.addEventListener('keydown', function(e) {
-      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
-    });
-  }
-});
-
-// ═══ UTILS ═══
-function initials(name) {
-  return name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
-}
-
-function now() {
-  return new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+  setTimeout(() => { t.style.transition = 'opacity 0.3s'; t.style.opacity = '0'; setTimeout(() => t.remove(), 300); }, 3000);
 }
 
 function esc(str) {
-  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
-function firstColor(grad) {
-  const m = grad.match(/#[0-9A-Fa-f]{6}/);
-  return m ? m[0] : '#fff';
+// ═══════════════════════════════════════
+//  DEMO DATA
+// ═══════════════════════════════════════
+function seedDemoData() {
+  if (localStorage.getItem('revcom_seeded')) return;
+
+  const today = new Date();
+  const fmt = (d) => d.toISOString().split('T')[0];
+  const add = (n) => { const d = new Date(today); d.setDate(d.getDate() + n); return fmt(d); };
+
+  save('meetings', [
+    { id:'m1', theme:'Point hebdomadaire Com', date:add(2), time:'09:00', resp:'Sophie Martin', color:'rouge', notes:'Revue des campagnes en cours' },
+    { id:'m2', theme:'Brainstorming Contenu Juillet', date:add(5), time:'14:30', resp:'Kofi Asante', color:'bleu', notes:'Idées pour la nouvelle série de posts' },
+    { id:'m3', theme:'Revue de la stratégie digitale', date:add(10), time:'10:00', resp:'Aminata Diallo', color:'violet', notes:'' },
+    { id:'m4', theme:'Lancement campagne été', date:add(14), time:'11:00', resp:'Jean-Paul Boka', color:'jaune', notes:'Présentation du calendrier éditorial' },
+  ]);
+
+  save('tasks', [
+    { id:'t1', name:'Créer l\'affiche pour la soirée Gala', assignee:'Sophie Martin', due:add(3), cat:'affiche', status:'inprogress', done:false },
+    { id:'t2', name:'Monter la vidéo du bilan mensuel', assignee:'Kofi Asante', due:add(5), cat:'video', status:'todo', done:false },
+    { id:'t3', name:'Publier le post Instagram du lundi', assignee:'Aminata Diallo', due:add(1), cat:'publication', status:'todo', done:false },
+    { id:'t4', name:'Rédiger la newsletter de juin', assignee:'Jean-Paul Boka', due:add(7), cat:'redaction', status:'todo', done:false },
+    { id:'t5', name:'Affiche réunion de quartier', assignee:'Sophie Martin', due:add(-2), cat:'affiche', status:'done', done:true },
+    { id:'t6', name:'Story Instagram événement', assignee:'Kofi Asante', due:add(-1), cat:'publication', status:'done', done:true },
+  ]);
+
+  save('polls', [
+    {
+      id:'p1', question:'Quel format pour notre prochain contenu ?',
+      options:[{label:'Vidéo courte (Reels)', votes:5},{label:'Carrousel Instagram', votes:3},{label:'Article de blog', votes:2},{label:'Infographie', votes:4}],
+      open:true, totalVotes:14, voted:false
+    },
+    {
+      id:'p2', question:'Meilleur moment pour publier ?',
+      options:[{label:'Matin (7h-9h)', votes:7},{label:'Midi (12h-13h)', votes:4},{label:'Soir (18h-20h)', votes:9}],
+      open:true, totalVotes:20, voted:false
+    }
+  ]);
+
+  localStorage.setItem('revcom_seeded', '1');
 }
 
-function scrollBottom() {
-  const c = document.getElementById('messages');
-  requestAnimationFrame(() => { c.scrollTop = c.scrollHeight; });
-}
+// Login on Enter key
+document.getElementById('login-name-input').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') chatLogin();
+});
 
-function shake(el) {
-  el.style.animation = 'none';
-  el.style.borderColor = 'var(--rouge)';
-  el.style.boxShadow = '0 0 0 3px rgba(232,25,44,0.2)';
-  setTimeout(() => { el.style.borderColor = ''; el.style.boxShadow = ''; }, 800);
-}
-
-// Heartbeat: clean stale members (>30s old) & refresh list
-setInterval(() => {
-  if (!myId) return;
-  registerMember(); // refresh own timestamp
-  const m = getMembers();
-  const now = Date.now();
-  let changed = false;
-  for (const [id, data] of Object.entries(m)) {
-    if (now - data.ts > 30000) { delete m[id]; changed = true; }
-  }
-  if (changed) localStorage.setItem(STORAGE_KEY, JSON.stringify(m));
-  updateMembersList();
-}, 8000);
+// ═══════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════
+seedDemoData();
+initDate();
+renderMeetings();
+renderMiniCal();
+updateTasksBadge();
 </script>
 </body>
 </html>
