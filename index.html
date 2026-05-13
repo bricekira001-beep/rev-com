@@ -373,19 +373,15 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 //  (gratuit sur https://console.firebase.google.com)
 // ══════════════════════════════════════════════════════
 const FB_CONFIG = {
-  apiKey: "AIzaSyDemo_RemplacezParVotreVraieCle",
-  databaseURL: "https://revcom-equipe-default-rtdb.firebaseio.com"
+  apiKey: "AIzaSyCGunj9cefp5pwuwW-AyYQPyYHAsop1A8c",
+  authDomain: "revcom-d30db.firebaseapp.com",
+  databaseURL: "https://revcom-d30db-default-rtdb.firebaseio.com",
+  projectId: "revcom-d30db",
+  storageBucket: "revcom-d30db.firebasestorage.app",
+  messagingSenderId: "564225117710",
+  appId: "1:564225117710:web:4cc44faac00df214a7f65f"
 };
 
-let db = null;
-let FB_OK = false;
-
-try {
-  if (!firebase.apps.length) firebase.initializeApp(FB_CONFIG);
-  else firebase.app();
-  db = firebase.database();
-  FB_OK = true;
-} catch(e) { console.warn('Firebase init:', e.message); }
 
 // ══ LOCAL STORE ══
 const S={m:'rc_mtg',t:'rc_tsk',p:'rc_poll'};
